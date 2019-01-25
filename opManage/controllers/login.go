@@ -1,11 +1,9 @@
 package controllers
 
-import "github.com/astaxie/beego"
-
 type LoginController struct {
-	beego.Controller
+	BaseController
 }
 
 func (self *LoginController) Get() {
-	self.TplName = "login.html"
+	self.TplName = "login/login.html"
 }
