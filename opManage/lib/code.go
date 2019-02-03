@@ -84,14 +84,24 @@ func GetSnsToken(code string,openid string,token string) string {
 	}
 	defer resp.Body.Close()
 	jsonStr,err := ioutil.ReadAll(resp.Body)
+	//fmt.Println(string(jsonStr),"errerrerrerreerrrrererererer")
 	if err != nil{
 		fmt.Println(err)
 	}
 	//fmt.Println(string(jsonStr))
-	jsonTostr := strings.Split(string(jsonStr),",")[2]
-	sns_token := strings.Split(jsonTostr,":")[1]
-	sns_token = strings.Replace(sns_token,"\"","",-1)
-	return sns_token
+	errmsgdict := strings.Split(string(jsonStr),",")[0]
+	errmsg := strings.Split(string(errmsgdict),":")[1]
+	errmsg = strings.Replace(errmsg,"\"","",-1)
+	if errmsg == "ok"{
+		jsonTostr := strings.Split(string(jsonStr),",")[2]
+		sns_token := strings.Split(jsonTostr,":")[1]
+		sns_token = strings.Replace(sns_token,"\"","",-1)
+		return sns_token
+	}else{
+		sns_token := "errmsg"
+		return sns_token
+	}
+
 }
 
 func GetUserInfo(token string) (string,string) {
@@ -107,13 +117,23 @@ func GetUserInfo(token string) (string,string) {
 		fmt.Println(err)
 	}
 	//fmt.Println(string(jsonStr))
-	jsonTostrName := strings.Split(string(jsonStr),",")[1]
-	name := strings.Split(jsonTostrName,":")[1]
-	name = strings.Replace(name,"\"","",-1)
-	jsonTostrOpenid := strings.Split(string(jsonStr),",")[3]
-	openid := strings.Split(jsonTostrOpenid,":")[1]
-	openid = strings.Replace(openid,"\"","",-1)
-	openid = strings.Replace(openid,"}","",-1)
-	//fmt.Println(name,openid)
-	return name,openid
+	errmsgdict := strings.Split(string(jsonStr),",")[0]
+	errmsg := strings.Split(string(errmsgdict),":")[0]
+	errmsg = strings.Replace(errmsg,"\"","",-1)
+	fmt.Println(errmsg,"jflajdflkajdfklj")
+	if errmsg == "{errmsg"{
+		name := "error"
+		openid := "error"
+		return name,openid
+	}else{
+		jsonTostrName := strings.Split(string(jsonStr),",")[1]
+		name := strings.Split(jsonTostrName,":")[1]
+		name = strings.Replace(name,"\"","",-1)
+		jsonTostrOpenid := strings.Split(string(jsonStr),",")[3]
+		openid := strings.Split(jsonTostrOpenid,":")[1]
+		openid = strings.Replace(openid,"\"","",-1)
+		openid = strings.Replace(openid,"}","",-1)
+		//fmt.Println(name,openid)
+		return name,openid
+	}
 }

@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>中控平台</title>
+    <link rel="stylesheet" type="text/css" href="http://www.jq22.com/jquery/bootstrap-3.3.4.css">
+    <link rel="stylesheet" href="css/user.css">
+
+</head>
+<body>
+    
+    <div id="wrapper">
+        <div class="overlay">
+            <div class="sticky">
+                <header>
+                <div class="sticky-nav">
+                    <span class="span-left">
+                        <img src="css/Koala.jpg" class="img-circle">
+                        <a href="#" class="name-a">张凡</a>
+                        <span class="manage-span">超级管理员</span>
+                    </span>
+                    <span class="span-right">欢迎使用阿拉蕾游戏服权限管理平台</span>
+                </div>
+                </header>
+                <div class="showtable">
+                    <h4>管理员列表</h4>
+                    <div class="search">
+                        <form>
+                            <input type="text" value="" placeholder="search...">
+                            <input type="submit" value="查询">
+                        </form>
+                    </div>
+                </div>
+                <div class="usertable">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <td>ID</td>
+                                <td>用户名</td>
+                                <td>电话号码</td>
+                                <td>电子邮箱</td>
+                                <td>超级管理员</td>
+                                <td>个人详情</td>
+                                <td>注册时间</td>
+                                <td>用户管理</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td>张凡</td>
+                                <td>133333333333</td>
+                                <td>zfan116@163.com</td>
+                                <td>YES</td>
+                                <td><a href="#" style="text-decoration: none;">点击查看</a></td>
+                                <td>2019-01-16</td>
+                                <td class="manage-user">
+                                    <a href="#">禁用</a>
+                                    <a href="#">删除</a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="zxf_pagediv">
+                </div>
+                <script src="css/js/jquery.min.js" type="text/javascript"></script>
+                <script src="css/js/zxf_page.js" type="text/javascript"></script>
+                <script type="text/javascript">
+                    $(".zxf_pagediv").createPage({
+                        pageNum: 5,
+                        current: 1,
+                        backfun: function(e) {
+                        //console.log(e);//回调
+                        }
+                    });
+                </script>
+             
+            </div>
+        </div>
+        <!-- Sidebar -->
+        <nav class="navbar navbar-inverse navbar-fixed-top" id="sidebar-wrapper" role="navigation">
+            <ul class="nav sidebar-nav">
+                <li class="sidebar-brand">
+                        <a class="t1">权限管理平台</a>
+                        <a href="/bootstrap代码/表格/test4.html" class="t2">
+                          <span class="glyphicon glyphicon-th-list"></span>
+                        </a>
+                </li>
+                <li>
+                    <a href="user.html"><i class="fa fa-fw fa-home"></i> 管理员</a>
+                </li>
+                <li>
+                    <a href="role.html"><i class="fa fa-fw fa-folder"></i> 角色管理</a>
+                </li>
+                <li>
+                    <a href="permission.html"><i class="fa fa-fw fa-twitter"></i> 权限因子</a>
+                </li>
+                <li>
+                    <a href="log.html"><i class="fa fa-fw fa-cog"></i> 日志查看</a>
+                </li>
+                <li>
+                    <a href="system.html"><i class="fa fa-fw fa-bank"></i> 关于系统</a>
+                </li>
+            </ul>
+        </nav>
+        <!-- /#sidebar-wrapper -->
+
+        <!-- Page Content -->
+        <div id="page-content-wrapper">
+            <a class="a-right">
+                <span class="glyphicon glyphicon-log-out"></span>
+                    注销
+            </a>
+            <a href="#" class="a-right"><span class="glyphicon glyphicon-cog"></span>设置</a>
+        
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-8 col-lg-offset-2">
+                        <div class="page-header">
+                            <span class="span-left">
+                                <img src="css/Koala.jpg" class="img-circle">
+                                <a href="#" class="name-a">张凡</a>
+                                <span class="manage-span">超级管理员</span>
+                            </span>
+                            <span class="span-right">欢迎使用阿拉蕾游戏服管理平台</span>
+                        </div>
+                        <div class="order">
+                            <span class="glyphicon glyphicon-th-large"></span>
+                            <span class="text">可以登陆的后台</span>
+                        </div>
+                        <div class="game-type">
+                            <h4>U3D手游</h4>
+                            <span class="game-name"><a href="#">烈火封神</a></span>
+                            <span class="game-name"><a href="#">烈火封神</a></span>
+                            <span class="game-name"><a href="#">烈火封神</a></span>
+                            <span class="game-name"><a href="#">烈火封神</a></span>
+                        </div>
+                        <div class="game-type">
+                            <h4>U3D手游</h4>
+                            <span class="game-name"><a href="#">烈火封神</a></span>
+                            <span class="game-name"><a href="#">烈火封神</a></span>
+                            <span class="game-name"><a href="#">烈火封神</a></span>
+                            <span class="game-name"><a href="#">烈火封神</a></span>
+                        </div>
+                        <div class="game-type">
+                            <h4>U3D手游</h4>
+                            <span class="game-name"><a href="#">烈火封神</a></span>
+                            <span class="game-name"><a href="#">烈火封神</a></span>
+                            <span class="game-name"><a href="#">烈火封神</a></span>
+                            <span class="game-name"><a href="#">烈火封神</a></span>
+                        </div>
+                        <div class="game-type">
+                            <h4>U3D手游</h4>
+                            <span class="game-name"><a href="#">烈火封神</a></span>
+                            <span class="game-name"><a href="#">烈火封神</a></span>
+                            <span class="game-name"><a href="#">烈火封神</a></span>
+                            <span class="game-name"><a href="#">烈火封神</a></span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+        <!-- /#page-content-wrapper -->
+
+    </div>
+</body>
+</html>

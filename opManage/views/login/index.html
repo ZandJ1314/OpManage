@@ -1,19 +1,154 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <title>游戏服管理平台</title>
-    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-    <link rel="stylesheet" href="text/css" href="/static/css/manage.css">
-    <script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
-    <script type="text/javascript" src="https://unpkg.com/vue/dist/vue.min.js"></script>
-    <script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>中控平台</title>
+    <link rel="stylesheet" type="text/css" href="http://www.jq22.com/jquery/bootstrap-3.3.4.css">
+    <link rel="stylesheet" href="/static/css/login/style.css">
+    <script src="https://code.jquery.com/jquery-3.0.0.min.js"></script>
+    <script src="http://www.jq22.com/jquery/bootstrap-3.3.4.js"></script>
+    <script src="/static/js/login/index.js"></script>
+
 </head>
 <body>
-    <div id="top">
-        <span>权限管理平台</span>
-        <p><span class="glyphicon glyphicon-log-out"></span>注销</p>
+
+<div id="wrapper">
+    <div class="overlay"></div>
+
+    <!-- Sidebar -->
+    <nav class="navbar navbar-inverse navbar-fixed-top" id="sidebar-wrapper" role="navigation">
+        <ul class="nav sidebar-nav">
+            <li class="sidebar-brand">
+                <a>权限管理平台</a>
+            </li>
+            <li>
+                <a href="/bootstrap代码/表格/user.html"><i class="fa fa-fw fa-home"></i> 管理员</a>
+            </li>
+            <li>
+                <a href="/bootstrap代码/表格/role.html"><i class="fa fa-fw fa-folder"></i> 角色管理</a>
+            </li>
+            <li>
+                <a href="/bootstrap代码/表格/permission.html"><i class="fa fa-fw fa-twitter"></i> 权限因子</a>
+            </li>
+            <li>
+                <a href="/bootstrap代码/表格/log.html"><i class="fa fa-fw fa-cog"></i> 日志查看</a>
+            </li>
+            <li>
+                <a href="/bootstrap代码/表格/system.html"><i class="fa fa-fw fa-bank"></i> 关于系统</a>
+            </li>
+        </ul>
+    </nav>
+    <!-- /#sidebar-wrapper -->
+
+    <!-- Page Content -->
+    <div id="page-content-wrapper">
+        <a class="a-right" href="/login">
+            <span class="glyphicon glyphicon-log-out"></span>
+            注销
+        </a>
+        <a data-toggle="modal" href="#myModal" class="a-right" id="getname"><span class="glyphicon glyphicon-cog"></span>设置</a>
+        <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span></button>
+                            <h4 class="modal-title" style="color:#5CADAD;">个人设置</h4>
+                    </div>
+                    <form action="/" method="post" onsubmit="return checkfun()" enctype="multipart/form-data">
+                        <div class="modal-body" style="height: 200px;">
+                            <div class="form-group" style="margin-top: 20px;">
+                                用户名称：
+                                <p id="showname" style="color: darkred"></p>
+                            </div>
+                            <div class="form-group" style="margin-top: 20px;">
+                                <label for="higherrole" class="col-sm-2 control-label">电话号码</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="heigherrole" placeholder="请输入你的电话号码" name="phonenumber" required="required" onblur="checknumber()">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="rolelevel" class="col-sm-2 control-label">邮箱地址</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="rolelevel" placeholder="请输入你的邮箱地址" name="emailadress" required="required" onblur="checkemail()">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="rolelevel" class="col-sm-2 control-label">选择头像</label>
+                                <div class="col-sm-10">
+                                        <input type="file" name="headimg" id="headphoto" required="required" onblur="checkimg()">点击这里上传文件
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer" style="height: 60px;">
+                            <button type="submit" class="btn btn-primary">保存</button>
+                            <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                        </div>
+                    </form>
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal -->
+        </div>
+        <button type="button" class="hamburger is-closed animated fadeInLeft" data-toggle="offcanvas">
+            <span class="hamb-top"></span>
+            <span class="hamb-middle"></span>
+            <span class="hamb-bottom"></span>
+        </button>
+
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2">
+                    <div class="page-header">
+                            <span class="span-left">
+                                <img src="/static/img/Koala.jpg" class="img-circle">
+                                <a href="#" class="name-a">张凡</a>
+                                <span class="manage-span">超级管理员</span>
+                            </span>
+                        <span class="span-right">欢迎使用阿拉蕾游戏服管理平台</span>
+                    </div>
+                    <div class="order">
+                        <span class="glyphicon glyphicon-th-large"></span>
+                        <span class="text">可以登陆的后台</span>
+                    </div>
+                    <div class="game-type">
+                        <h4>U3D手游</h4>
+                        <span class="game-name"><a href="#">烈火封神</a></span>
+                        <span class="game-name"><a href="#">烈火封神</a></span>
+                        <span class="game-name"><a href="#">烈火封神</a></span>
+                        <span class="game-name"><a href="#">烈火封神</a></span>
+                    </div>
+                    <div class="game-type">
+                        <h4>U3D手游</h4>
+                        <span class="game-name"><a href="#">烈火封神</a></span>
+                        <span class="game-name"><a href="#">烈火封神</a></span>
+                        <span class="game-name"><a href="#">烈火封神</a></span>
+                        <span class="game-name"><a href="#">烈火封神</a></span>
+                    </div>
+                    <div class="game-type">
+                        <h4>U3D手游</h4>
+                        <span class="game-name"><a href="#">烈火封神</a></span>
+                        <span class="game-name"><a href="#">烈火封神</a></span>
+                        <span class="game-name"><a href="#">烈火封神</a></span>
+                        <span class="game-name"><a href="#">烈火封神</a></span>
+                    </div>
+                    <div class="game-type">
+                        <h4>U3D手游</h4>
+                        <span class="game-name"><a href="#">烈火封神</a></span>
+                        <span class="game-name"><a href="#">烈火封神</a></span>
+                        <span class="game-name"><a href="#">烈火封神</a></span>
+                        <span class="game-name"><a href="#">烈火封神</a></span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
     </div>
+    <!-- /#page-content-wrapper -->
+
+</div>
+<!-- /#wrapper -->
+
 </body>
 </html>

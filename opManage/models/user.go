@@ -10,8 +10,10 @@ type User struct {
 	Id int
 	Openid string
 	UserName string
+	PhoneNumber string `orm:"null"`
+	EmailAdress string `orm:"null"`
 	HeadPortraitName string `orm:"null"`
-	ManageName string `orm:"default(普通管理员)"`
+	ManageName string `orm:"default('普通管理员')"`
 	Issuperadministrator int `orm:"default(0)"`
 	CreateTime time.Time `orm:"auto_now_add;type(datetime)"`  //第一次保存时才设置时间
 	UpdateTime time.Time `orm:"auto_now;type(datetime);null"`   //每一次宝宝都会对时间进行更新
