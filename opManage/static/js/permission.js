@@ -68,6 +68,19 @@ $(function () {
 })
 
 $(function(){
+	$("#updatebtn").click(function(){
+		var val=$('input:radio[name="bedStatus"]:checked').val();
+		console.log(val)
+		if (val == "transfer"){
+			document.getElementById("higher_rolename").style.display="none";
+		}else{
+			document.getElementById("higher_rolename").style.display="inline";
+		}
+
+	})
+})
+
+$(function(){
 	$(":radio").click(function(){
 		if ($(this).val() == "transfer"){
 			document.getElementById("higher_rolename").style.display="none";

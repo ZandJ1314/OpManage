@@ -6,7 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>中控平台</title>
     <link rel="stylesheet" type="text/css" href="http://www.jq22.com/jquery/bootstrap-3.3.4.css">
-    <link rel="stylesheet" href="/static/css/permission/user.css">
+    <script src="https://code.jquery.com/jquery-3.0.0.min.js"></script>
+    <script src="http://www.jq22.com/jquery/bootstrap-3.3.4.js"></script>
+    <script src="/static/js/zxf_page.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="/static/css/permission/game.css">
+    <script src="/static/js/game.js" type="text/javascript"></script>
 
 </head>
 <body>
@@ -29,11 +33,15 @@
             </header>
             <div class="showtable">
                 <h4>游戏列表</h4>
-                <div class="search">
-                    <button type="button" class="btn btn-success">点击添加游戏</button>
-                </div>
+                <blockquote class="elem-quote">
+                    说明：新增游戏，请直接点击右侧按钮进行操作
+                </blockquote>
             </div>
-            <div class="usertable">
+            <div class="addgame">
+                <button type="button" class="btn btn-success btn-lg" data-toggle="modal" data-target="#myModal" id="addbtn">点击添加游戏</button>
+            </div>
+
+            <div class="gametable">
                 <table class="table table-bordered">
                     <thead>
                     <tr>
@@ -49,9 +57,7 @@
             </div>
             <div class="zxf_pagediv">
             </div>
-            <script src="/static/js/jquery.min.js" type="text/javascript"></script>
-            <script src="/static/js/zxf_page.js" type="text/javascript"></script>
-            <script type="text/javascript">
+            <script>
                 $(".zxf_pagediv").createPage({
                     pageNum: 5,
                     current: 1,
@@ -62,6 +68,63 @@
             </script>
 
         </div>
+    </div>
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span></button>
+                    <h4 class="modal-title" id="myModalLabel" style="color:#5CADAD;">添加游戏</h4>
+                </div>
+                <form class="form-horizontal" role="form">
+                    <div class="modal-body">
+                        <div class="select-game">
+                            <p>游戏Id</p>
+                            <input type="text" class="form-control" id="gameid" placeholder="请输入游戏Id" name="gameid">
+                        </div>
+                        <div class="select-game">
+                            <p>游戏名称</p>
+                            <input type="text" class="form-control" id="gamename" placeholder="请输入游戏名称" name="gamename">
+                        </div>
+                        <div class="select-game" id="game_username">
+                            <p>请选择绑定的管理员</p>
+                            <select>
+                                <option value="1">张凡</option>
+                                <option value="2">钟涛</option>
+                                <option value="3">罗国玲</option>
+                            </select>
+                        </div>
+                        <div class="select-game">
+                            <!-- <label for="rolename" class="col-sm-5 control-label">请选择是否需要更改上级权限</label> -->
+                            <p>请选择是否需要新增游戏类型</p>
+                            <input type="radio" name="bedStatus" id="allot" value="allot">是
+                            <input type="radio" name="bedStatus" id="transfer" value="transfer" checked="checked">否
+                        </div>
+                        <div class="select-game" id="addgametype">
+                            <p style="margin-left: 20px;">游戏类型</p>
+                            <input type="text" class="form-control" placeholder="请输入游戏类型" name="gametype" style="margin-left: 20px;">
+                        </div>
+                        <div class="select-game" id="gametype">
+                            <select>
+                                <option value="1">张凡</option>
+                                <option value="2">钟涛</option>
+                                <option value="3">罗国玲</option>
+                            </select>
+                        </div>
+
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">关闭
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            确认添加
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div><!-- /.modal-content -->
     </div>
     <!-- Sidebar -->
     <nav class="navbar navbar-inverse navbar-fixed-top" id="sidebar-wrapper" role="navigation">
