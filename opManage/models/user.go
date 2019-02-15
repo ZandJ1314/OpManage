@@ -13,13 +13,14 @@ type User struct {
 	PhoneNumber string `orm:"null"`
 	EmailAdress string `orm:"null"`
 	HeadPortraitName string `orm:"null"`
-	ManageName string `orm:"default('普通管理员')"`
-	Issuperadministrator int `orm:"default(0)"`
+	ManageName string `orm:"default(普通管理员)"`
+	Issuperadministrator int `orm:"default(1)"`
 	CreateTime time.Time `orm:"auto_now_add;type(datetime)"`  //第一次保存时才设置时间
 	UpdateTime time.Time `orm:"auto_now;type(datetime);null"`   //每一次宝宝都会对时间进行更新
 	Gametype []*GameType `orm:"reverse(many)"`
 	Gamename []*GameName `orm:"reverse(many)"`
 }
+
 
 
 func (u *User) TableName() string{
@@ -39,7 +40,16 @@ func UsergetByOpenid(openid string) (*User,error){
 	return u,err
 }
 
-func (u *User) Update(fileds ...string) error {
+func UsergetByusername(name string) (*User,error){
+	u := new(User)
+	err := orm.NewOrm().QueryTable(TableName("user")).Filter("user_name",name).One(u)
+	if err != nil{
+		return nil,err
+	}
+	return u,err
+}
+
+func (u *User) UserUpdate(fileds ...string) error {
 	if _,err := orm.NewOrm().Update(u,fileds...);err != nil {
 		return err
 	}

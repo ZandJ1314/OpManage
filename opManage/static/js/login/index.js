@@ -27,26 +27,6 @@ $(document).ready(function () {
     });
 });
 
-// function getname() {
-//     var name = $(".name-a").val()
-//     $("#showname").html(name)
-// }
-
-//在模态窗口使用 window.dialogArguments 表示父窗口对象
-$("#getname").on("shown.bs.modal",function (event) {
-    var name = window.dialogArguments.document.getElementById("getname").value;
-    $("#showname").html(name)
-})
-
-
-
-
-
-// document.getElementById("getname").click(function () {
-//     var name = $(".name-a").val()
-//     console.log(name)
-//     $("#showname").html(name)
-// });
 
 
 function checknumber(){
@@ -82,6 +62,7 @@ function checkimg() {
     console.log(finalType);
     if (finalType != ".jpg" && finalType != ".png" && finalType != ".jpeg"){
         alert("请输入正确格式的图片,要以jpg/jpeg/png结尾");
+        $('#headphoto').val('')
         return false
     }
     return true

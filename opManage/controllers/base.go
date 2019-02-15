@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"github.com/astaxie/beego"
 	"opManage/models"
 	"strings"
@@ -61,7 +62,7 @@ func (self *BaseController) ajaxMsg(msg interface{},msgno int){
 	result["message"] = msg
 	self.Data["json"] = result
 	self.ServeJSON()
-	//self.StopRun()
+	return
 }
 
 
@@ -71,7 +72,8 @@ func (self *BaseController) display(tpl ...string){
 	if len(tpl) > 0 {
 		tplname = strings.Join([]string{tpl[0],"html"},".")
 	}else{
-		tplname = self.controllerName + "/" + self.actionName + ".html"
+		tplname =self.controllerName + ".html"
+		fmt.Println(tplname)
 	}
 	self.TplName = tplname
 }

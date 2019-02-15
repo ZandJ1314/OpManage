@@ -18,7 +18,7 @@ type GameType struct {
 
 
 func (g *GameType) TableName() string{
-	return TableName("gameType")
+	return TableName("gametype")
 }
 
 func GameTypeAdd(g *GameType) (int64,error) {
@@ -28,14 +28,14 @@ func GameTypeAdd(g *GameType) (int64,error) {
 
 func GameTypeGetById(typepid int) (*GameType, error) {
 	g := new(GameType)
-	err := orm.NewOrm().QueryTable(TableName("gameType")).Filter("typepid", typepid).One(g)
+	err := orm.NewOrm().QueryTable(TableName("gametype")).Filter("typepid", typepid).One(g)
 	if err != nil {
 		return nil, err
 	}
 	return g, nil
 }
 
-func (g *GameType) Update(fields ...string) error {
+func (g *GameType) GametypeUpdate(fields ...string) error {
 	if _, err := orm.NewOrm().Update(g, fields...); err != nil {
 		return err
 	}

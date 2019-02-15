@@ -24,19 +24,19 @@
                 <a>权限管理平台</a>
             </li>
             <li>
-                <a href="/bootstrap代码/表格/user.html"><i class="fa fa-fw fa-home"></i> 管理员</a>
+                <a href="/user"><i class="fa fa-fw fa-home"></i> 管理员</a>
             </li>
             <li>
-                <a href="/bootstrap代码/表格/role.html"><i class="fa fa-fw fa-folder"></i> 角色管理</a>
+                <a href="/role"><i class="fa fa-fw fa-folder"></i> 角色管理</a>
             </li>
             <li>
-                <a href="/bootstrap代码/表格/permission.html"><i class="fa fa-fw fa-twitter"></i> 权限因子</a>
+                <a href="/permission"><i class="fa fa-fw fa-twitter"></i> 权限因子</a>
             </li>
             <li>
-                <a href="/bootstrap代码/表格/log.html"><i class="fa fa-fw fa-cog"></i> 日志查看</a>
+                <a href="/game"><i class="fa fa-fw fa-cog"></i> 游戏管理</a>
             </li>
             <li>
-                <a href="/bootstrap代码/表格/system.html"><i class="fa fa-fw fa-bank"></i> 关于系统</a>
+                <a href="/system"><i class="fa fa-fw fa-bank"></i> 关于系统</a>
             </li>
         </ul>
     </nav>
@@ -48,37 +48,39 @@
             <span class="glyphicon glyphicon-log-out"></span>
             注销
         </a>
-        <a data-toggle="modal" href="#myModal" class="a-right" id="getname"><span class="glyphicon glyphicon-cog"></span>设置</a>
+        <a data-toggle="modal" href="#myModal" class="a-right"><span class="glyphicon glyphicon-cog"></span>设置</a>
         <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">×</span></button>
-                            <h4 class="modal-title" style="color:#5CADAD;">个人设置</h4>
+                            <h4 class="modal-title" id="myModalLabel" style="color:#5CADAD;">个人设置</h4>
                     </div>
                     <form action="/" method="post" onsubmit="return checkfun()" enctype="multipart/form-data">
                         <div class="modal-body" style="height: 200px;">
                             <div class="form-group" style="margin-top: 20px;">
-                                用户名称：
-                                <p id="showname" style="color: darkred"></p>
+                                <label for="higherrole" class="col-sm-2 control-label">用户名称</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="heighername" name="username" required="required">
+                                </div>
                             </div>
                             <div class="form-group" style="margin-top: 20px;">
                                 <label for="higherrole" class="col-sm-2 control-label">电话号码</label>
                                 <div class="col-sm-10">
-                                    <input type="text" class="form-control" id="heigherrole" placeholder="请输入你的电话号码" name="phonenumber" required="required" onblur="checknumber()">
+                                    <input type="text" class="form-control" id="heigherrole" placeholder="请输入你的电话号码" name="phonenumber" required="required" onchange="checknumber()">
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label for="rolelevel" class="col-sm-2 control-label">邮箱地址</label>
                                 <div class="col-sm-10">
-                                    <input type="text" class="form-control" id="rolelevel" placeholder="请输入你的邮箱地址" name="emailadress" required="required" onblur="checkemail()">
+                                    <input type="text" class="form-control" id="rolelevel" placeholder="请输入你的邮箱地址" name="emailadress" required="required" onchange="checkemail()">
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label for="rolelevel" class="col-sm-2 control-label">选择头像</label>
                                 <div class="col-sm-10">
-                                        <input type="file" name="headimg" id="headphoto" required="required" onblur="checkimg()">点击这里上传文件
+                                        <input type="file" name="headimg" id="headphoto" required="required" onchange="checkimg()">点击这里上传文件
                                 </div>
                             </div>
                         </div>
@@ -90,6 +92,15 @@
                 </div><!-- /.modal-content -->
             </div><!-- /.modal -->
         </div>
+        <script>
+            //父元素给模态框传值
+            $("#myModal").on("show.bs.modal",function (event) {
+                var name = $('.name-a').text();
+                var modal = $(this);
+                modal.find('#heighername').val(name);
+            });
+
+        </script>
         <button type="button" class="hamburger is-closed animated fadeInLeft" data-toggle="offcanvas">
             <span class="hamb-top"></span>
             <span class="hamb-middle"></span>

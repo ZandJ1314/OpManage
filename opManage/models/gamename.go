@@ -19,7 +19,7 @@ type GameName struct {
 
 
 func (g *GameName) TableName() string{
-	return TableName("gameName")
+	return TableName("gamename")
 }
 
 func GameNameAdd(g *GameType) (int64,error) {
@@ -29,14 +29,23 @@ func GameNameAdd(g *GameType) (int64,error) {
 
 func GameNameGetByGameid(gameid int) (*GameName, error) {
 	g := new(GameName)
-	err := orm.NewOrm().QueryTable(TableName("gameName")).Filter("gameid", gameid).One(g)
+	err := orm.NewOrm().QueryTable(TableName("gamename")).Filter("game_id", gameid).One(g)
 	if err != nil {
 		return nil, err
 	}
 	return g, nil
 }
 
-func (g *GameName) Update(fields ...string) error {
+func GameNameGetByGamename(gamename string) (*GameName,error){
+	g := new(GameName)
+	err := orm.NewOrm().QueryTable(TableName("gamename")).Filter("gamename",gamename).One(g)
+	if err != nil{
+		return nil,err
+	}
+	return g,nil
+}
+
+func (g *GameName) GamenameUpdate(fields ...string) error {
 	if _, err := orm.NewOrm().Update(g, fields...); err != nil {
 		return err
 	}

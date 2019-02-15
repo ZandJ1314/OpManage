@@ -6,19 +6,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>中控平台</title>
     <link rel="stylesheet" type="text/css" href="http://www.jq22.com/jquery/bootstrap-3.3.4.css">
-    <link rel="stylesheet" href="css/user.css">
+    <link rel="stylesheet" href="/static/css/permission/user.css">
 
 </head>
 <body>
-    
     <div id="wrapper">
         <div class="overlay">
             <div class="sticky">
                 <header>
                 <div class="sticky-nav">
                     <span class="span-left">
-                        <img src="css/Koala.jpg" class="img-circle">
-                        <a href="#" class="name-a">张凡</a>
+                        <img src="/static/img/headimg/Koala.jpg" class="img-circle">
+                        {{range .result}}
+                        {{if eq .issuperadministrator "0"}}
+                            <a href="#" class="name-a">{{.username}}</a>
+                        {{end}}
+                        {{end}}
                         <span class="manage-span">超级管理员</span>
                     </span>
                     <span class="span-right">欢迎使用阿拉蕾游戏服权限管理平台</span>
@@ -47,27 +50,33 @@
                                 <td>用户管理</td>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tabody>
+                            {{range .result}}
                             <tr>
-                                <td>1</td>
-                                <td>张凡</td>
-                                <td>133333333333</td>
-                                <td>zfan116@163.com</td>
-                                <td>YES</td>
+                                <td>{{.openid}}</td>
+                                <td>{{.username}}</td>
+                                <td>{{.phonenumber}}</td>
+                                <td>{{.emailadress}}</td>
+                                {{if eq .issuperadministrator "0"}}
+                                    <td>YES</td>
+                                {{else}}
+                                    <td>NO</td>
+                                {{end}}
                                 <td><a href="#" style="text-decoration: none;">点击查看</a></td>
-                                <td>2019-01-16</td>
+                                <td>{{.createtime}}</td>
                                 <td class="manage-user">
                                     <a href="#">禁用</a>
                                     <a href="#">删除</a>
                                 </td>
                             </tr>
-                        </tbody>
+                            {{end}}
+                        </tabody>
                     </table>
                 </div>
                 <div class="zxf_pagediv">
                 </div>
-                <script src="css/js/jquery.min.js" type="text/javascript"></script>
-                <script src="css/js/zxf_page.js" type="text/javascript"></script>
+                <script src="/static/js/jquery.min.js" type="text/javascript"></script>
+                <script src="/static/js/zxf_page.js" type="text/javascript"></script>
                 <script type="text/javascript">
                     $(".zxf_pagediv").createPage({
                         pageNum: 5,
@@ -85,24 +94,24 @@
             <ul class="nav sidebar-nav">
                 <li class="sidebar-brand">
                         <a class="t1">权限管理平台</a>
-                        <a href="/bootstrap代码/表格/test4.html" class="t2">
+                        <a href="/" class="t2">
                           <span class="glyphicon glyphicon-th-list"></span>
                         </a>
                 </li>
                 <li>
-                    <a href="user.html"><i class="fa fa-fw fa-home"></i> 管理员</a>
+                    <a href="/user"><i class="fa fa-fw fa-home"></i> 管理员</a>
                 </li>
                 <li>
-                    <a href="role.html"><i class="fa fa-fw fa-folder"></i> 角色管理</a>
+                    <a href="/role"><i class="fa fa-fw fa-folder"></i> 角色管理</a>
                 </li>
                 <li>
-                    <a href="permission.html"><i class="fa fa-fw fa-twitter"></i> 权限因子</a>
+                    <a href="/permission"><i class="fa fa-fw fa-twitter"></i> 权限因子</a>
                 </li>
                 <li>
-                    <a href="log.html"><i class="fa fa-fw fa-cog"></i> 日志查看</a>
+                    <a href="/game"><i class="fa fa-fw fa-cog"></i> 游戏管理</a>
                 </li>
                 <li>
-                    <a href="system.html"><i class="fa fa-fw fa-bank"></i> 关于系统</a>
+                    <a href="/system"><i class="fa fa-fw fa-bank"></i> 关于系统</a>
                 </li>
             </ul>
         </nav>

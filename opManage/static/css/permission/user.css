@@ -35,7 +35,7 @@ html {
   position: absolute;
 }
 #sidebar-wrapper {
-  -moz-transition: all 0.5s ease
+  -moz-transition: all 0.5s ease;
   -o-transition: all 0.5s ease;
   -webkit-transition: all 0.5s ease;
   background: #1a1a1a;
@@ -348,7 +348,7 @@ span.disabled{
   width: 35px;
   height: 35px;
   line-height: 35px;
-  margin: 0 5 px;
+  margin: 0 5px;
 }
 .zxfPagenum{
   color: #999999;

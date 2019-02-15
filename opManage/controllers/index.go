@@ -28,7 +28,6 @@ func (r *IndexController) Get() {
 	}
 	fmt.Println(name,openid)
 	dataurl := r.Ctx.Request.RequestURI
-	fmt.Println(dataurl)
 	lens := len(dataurl)
 	//fmt.Println(dataurl[lens-5:])
 	//a := reflect.TypeOf(dataurl).String()//判断数据类型
@@ -60,28 +59,35 @@ func (r *IndexController) Get() {
 	}else{
 		_,err := models.UsergetByOpenid(openid)
 		if err != nil{
-			newUser := new(models.User)
-			newUser.UserName = name
-			newUser.Openid = openid
-			if _,err := models.UserAdd(newUser);err != nil {
-				r.ajaxMsg(err.Error(),Msg_Err)
+			if openid != "error"{
+				newUser := new(models.User)
+				newUser.UserName = name
+				newUser.Openid = openid
+				if _,err := models.UserAdd(newUser);err != nil {
+					r.ajaxMsg(err.Error(),Msg_Err)
+				}
+				User,err:= models.UsergetByOpenid(openid)
+				if err != nil{
+					lib.NewLog().Error("failed",err)
+				}
+				//fmt.Println(User,err,"hello world")
+				id := User.Id
+				userinfo["id"] = id
+				name := User.UserName
+				userinfo["name"] = name
+				openid := User.Openid
+				userinfo["openid"] = openid
+				headPortraitName := User.HeadPortraitName
+				userinfo["headPortraitName"] =headPortraitName
+				manageName := User.ManageName
+				userinfo["manageName"] = manageName
+				issuperadministrator := User.Issuperadministrator
+				userinfo["issuperadministrator"] = issuperadministrator
+				r.Data["result"] = userinfo
+				r.TplName = "login/index.html"
+			}else{
+				lib.NewLog().Error("failed,openid传值进来为%s",openid)
 			}
-			User,err:= models.UsergetByOpenid(openid)
-			fmt.Println(User,err,"hello world")
-			id := User.Id
-			userinfo["id"] = id
-			name := User.UserName
-			userinfo["name"] = name
-			openid := User.Openid
-			userinfo["openid"] = openid
-			headPortraitName := User.HeadPortraitName
-			userinfo["headPortraitName"] =headPortraitName
-			manageName := User.ManageName
-			userinfo["manageName"] = manageName
-			issuperadministrator := User.Issuperadministrator
-			userinfo["issuperadministrator"] = issuperadministrator
-			r.Data["result"] = userinfo
-			r.TplName = "login/index.html"
 		}else{
 			//r.Data["result"] = "用户已经存在,请点击下面链接进行登录"
 			r.redirect("/register")
@@ -92,13 +98,15 @@ func (r *IndexController) Get() {
 
 
 func (r *IndexController) Post(){
-	openid := "w"
-	User,err := models.UsergetByOpenid(openid)
+	username := r.GetString("username")
+	User,err := models.UsergetByusername(username)
 	phonenumber := r.GetString("phonenumber")
 	emailadress := r.GetString("emailadress")
 	_,head,err := r.GetFile("headimg")
+	fmt.Println(username,phonenumber,emailadress)
 	fmt.Println(err)
 	if err != nil{
+		lib.NewLog().Error("图片上传失败",err)
 		beego.Info("文件上传失败")
 	}else{
 		filename := head.Filename
@@ -110,14 +118,19 @@ func (r *IndexController) Post(){
 		//if fileExt != ".png" && fileExt!=".jpeg" || fileExt!=".jpg"{
 		//	beego.Info("文件名不正确")
 		//}
-		err1 := r.SaveToFile("headimg","./static/img/headimg"+filename)
-		if err1 != nil{
-			beego.Info("文件保存失败")
+		if err := User.UserUpdate();err != nil{
+			lib.NewLog().Error("failed",err)
+			r.ajaxMsg(err.Error(),Msg_Err)
+		}else{
+			err1 := r.SaveToFile("headimg","./static/img/headimg/"+filename)
+			if err1 != nil{
+				lib.NewLog().Error("图片保存失败",err)
+				beego.Info("文件保存失败")
+			}
+			fmt.Println(head.Filename,err)
+			fmt.Println(phonenumber,emailadress)
+			r.TplName = "login/index.html"
 		}
-		fmt.Println(head.Filename,err)
-		fmt.Println(phonenumber,emailadress)
-		r.TplName = "login/index.html"
 	}
-
 
 }
