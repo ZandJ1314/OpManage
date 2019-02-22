@@ -120,7 +120,6 @@ func GetUserInfo(token string) (string,string) {
 	errmsgdict := strings.Split(string(jsonStr),",")[0]
 	errmsg := strings.Split(string(errmsgdict),":")[0]
 	errmsg = strings.Replace(errmsg,"\"","",-1)
-	fmt.Println(errmsg,"jflajdflkajdfklj")
 	if errmsg == "{errmsg"{
 		name := "error"
 		openid := "error"

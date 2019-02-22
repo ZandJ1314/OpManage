@@ -16,7 +16,7 @@ type Role struct {
 	RolePid int
 	CreateTime time.Time `orm:"auto_now_add;type(datetime)"`
 	UpdateTime time.Time `orm:"auto_now;type(datetime);null"`
-	GameName *GameName `orm:"rel(fk)"`
+	//GameName *GameName `orm:"rel(fk)"`
 }
 
 

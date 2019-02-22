@@ -24,19 +24,19 @@
                 <a>权限管理平台</a>
             </li>
             <li>
-                <a href="/user"><i class="fa fa-fw fa-home"></i> 管理员</a>
+                <a href="/user?name={{.result.name}}&head={{.result.headPortraitName}}"><i class="fa fa-fw fa-home"></i> 管理员</a>
             </li>
             <li>
-                <a href="/role"><i class="fa fa-fw fa-folder"></i> 角色管理</a>
+                <a href="/role?name={{.result.name}}&head={{.result.headPortraitName}}"><i class="fa fa-fw fa-folder"></i> 角色管理</a>
             </li>
             <li>
-                <a href="/permission"><i class="fa fa-fw fa-twitter"></i> 权限因子</a>
+                <a href="/permission?name={{.result.name}}&head={{.result.headPortraitName}}"><i class="fa fa-fw fa-twitter"></i> 权限因子</a>
             </li>
             <li>
-                <a href="/game"><i class="fa fa-fw fa-cog"></i> 游戏管理</a>
+                <a href="/game?name={{.result.name}}&head={{.result.headPortraitName}}"><i class="fa fa-fw fa-cog"></i> 游戏管理</a>
             </li>
             <li>
-                <a href="/system"><i class="fa fa-fw fa-bank"></i> 关于系统</a>
+                <a href="/system?name={{.result.name}}&head={{.result.headPortraitName}}"><i class="fa fa-fw fa-bank"></i> 关于系统</a>
             </li>
         </ul>
     </nav>
@@ -58,6 +58,7 @@
                             <h4 class="modal-title" id="myModalLabel" style="color:#5CADAD;">个人设置</h4>
                     </div>
                     <form action="/" method="post" onsubmit="return checkfun()" enctype="multipart/form-data">
+                        {{ .xsrfdata }}
                         <div class="modal-body" style="height: 200px;">
                             <div class="form-group" style="margin-top: 20px;">
                                 <label for="higherrole" class="col-sm-2 control-label">用户名称</label>
@@ -100,8 +101,15 @@
                 modal.find('#heighername').val(name);
             });
 
+            $(document).ready(function(){
+                var managename = $('.manage-span').text();
+                if (managename == "普通管理员"){
+                    document.getElementById("SelectBtn").disabled = false;
+                }
+            })
+
         </script>
-        <button type="button" class="hamburger is-closed animated fadeInLeft" data-toggle="offcanvas">
+        <button type="button" class="hamburger is-closed animated fadeInLeft" data-toggle="offcanvas" id="SelectBtn">
             <span class="hamb-top"></span>
             <span class="hamb-middle"></span>
             <span class="hamb-bottom"></span>
@@ -112,9 +120,9 @@
                 <div class="col-lg-8 col-lg-offset-2">
                     <div class="page-header">
                             <span class="span-left">
-                                <img src="/static/img/Koala.jpg" class="img-circle">
-                                <a href="#" class="name-a">张凡</a>
-                                <span class="manage-span">超级管理员</span>
+                                <img src="/static/img/headimg/{{.result.headPortraitName}}" class="img-circle">
+                                <a href="#" class="name-a">{{.result.name}}</a>
+                                <span class="manage-span">{{.result.managename}}</span>
                             </span>
                         <span class="span-right">欢迎使用阿拉蕾游戏服管理平台</span>
                     </div>
@@ -122,13 +130,12 @@
                         <span class="glyphicon glyphicon-th-large"></span>
                         <span class="text">可以登陆的后台</span>
                     </div>
+                    {{range .result.gameinfo}}
                     <div class="game-type">
-                        <h4>U3D手游</h4>
-                        <span class="game-name"><a href="#">烈火封神</a></span>
-                        <span class="game-name"><a href="#">烈火封神</a></span>
-                        <span class="game-name"><a href="#">烈火封神</a></span>
-                        <span class="game-name"><a href="#">烈火封神</a></span>
+                        <h4>{{.gametype}}</h4>
+                        <span class="game-name"><a href="#">{{.gamename}}</a></span>
                     </div>
+                    {{end}}
                     <div class="game-type">
                         <h4>U3D手游</h4>
                         <span class="game-name"><a href="#">烈火封神</a></span>

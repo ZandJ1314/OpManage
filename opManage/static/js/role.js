@@ -1,224 +1,111 @@
+var zTree;
+var setting = {
+	view: {//表示tree的显示状态
+		dblClickExpand: false,
+		showLine: true,
+		selectedMulti: true//表示是否允许多选
+	},
+	data: {
+		simpleData: {
+			enable:true,
+			idKey: "id",
+			pIdKey: "pId",
+			rootPId: "0"
+		}
+	},
+	check:{
+		enable:true,
+		checkStyle:"checkbox",
+		chkboxType: { "Y":"s","N":"s" }
+	},
+};
+
+
+$(document).ready(function(){
+	$.ajax({
+		url:"role/ztree",
+		dataType:"json",
+		data:{},
+		type:"post",
+		async:false,
+		contentType:"application/json",
+		success:function (result) {
+			console.log(result)
+			zNodes = result
+		},
+		error:function (xhr) {
+			alert("error")
+		}
+	})
+	var treeobj = $.fn.zTree.init($('#tree'), setting, zNodes);//获取ztree对象，三个参数一次分别是容器(zTree 的容器 className 别忘了设置为 "ztree")、参数配置、数据源
+	var zTree = $.fn.zTree.getZTreeObj("tree");//根据 treeId 获取 zTree 对象的方法,必须在初始化 zTree 以后才可以使用此方法,有了这个方法，用户不再需要自己设定全局变量来保存 zTree 初始化后得到的对象了，而且在所有回调函数中全都会返回 treeId 属性，用户可以随时使用此方法获取需要进行操作的 zTree 对象
+	zTree.selectNode(zTree.getNodeByParam("id", 0));//支持同时选中多个节点,通过 zTree 对象执行此方法
+
+
+});
+
+
 $(function () {
-        function getTree() {
-            var data = [
-            	{
-            		text:"所有权限",
-            		nodeId:"1001",
-            		icon:"glyphicon glyphicon-home",
-            		nodes:[
-            			{
-            				text:"任务管理",
-            				nodeId:"2001",          				
-            				nodes:[
-            					{
-            						text:"sister",
-            						nodeId:"3101",
-            	
-            					},
-            					{
-            						text:"body",
-            						nodeId:"3102",
-            						
-            					}
-            				]
-            			},
-            			{
-            				text:"大资产管理",
-            				nodeId:"2002",
-            				
-            				nodes:[
-            					{
-            						text:"www",
-            						nodeId:"3201",
-            						
-            					},
-            					{
-            						text:"https",
-            						nodeId:"3202",
-            					}
-            				]
-            			},
-            			{
-            				text:"系统管理",
-            				nodeId:"2003",
-            				
-            			},
-            			{
-            				text:"日志管理",
-            				nodeId:"2004",
-            				
-            				nodes:[
-            					{
-            						text:"python",
-            						nodeId:"3401",
-            						
-            					},
-            					{
-            						text:"golang",
-            						nodeId:"3402",
-            						
-            					}
-            				]
-            			},
-            			{
-            				text:"运维工具",
-            				nodeId:"2005",
-            			},
-            			{
-            				text:"运维权限",
-            				nodeId:"2006"
-            			}
-            		]
-
-            	}
-            ]
-            return data;
-        }
-        var obj = {};
-        obj.text = "123";
-        $('#tree').treeview({
-            data: getTree(),         // data is not optional
-            levels: 5,
-            showCheckbox:true,
-            //在参数中使用回调函数来绑定任何事件，或者使用标准的jQuery .on()方法来绑定事件
-            onNodeChecked:nodeChecked ,
-        	onNodeUnchecked:nodeUnchecked,
-            
-        });
-
-        var nodeCheckedSilent = false;
-		function nodeChecked (event, node){
-    		if(nodeCheckedSilent){
-        		return;
-    		}
-    		nodeCheckedSilent = true;
-    		checkAllParent(node)
-    		checkAllSon(node)
-    		var parentNode = $("#tree").treeview("getNode", node.parentId);      
-            setParentNodeCheck(node);
-    		nodeCheckedSilent = false;
+	//序列化表单转换为json字符串
+	// var formarray = $("#addForm").serializeArray()
+	$("#addBtn").click(function () {
+		var array = {}
+		var treeObj = $.fn.zTree.getZTreeObj("tree"),
+			nodes = treeObj.getCheckedNodes(true)
+		var rolenodes = {}
+		for (var j=0;j<nodes.length;j++){
+			var id = nodes[j].id
+			var rolename = nodes[j].name
+			rolenodes[id] = rolename
 		}
- 
-		var nodeUncheckedSilent = false;
-		function nodeUnchecked  (event, node){
-		    if(nodeUncheckedSilent)
-		        return;
-		    nodeUncheckedSilent = true;
-		    uncheckAllParent(node)
-		    uncheckAllSon(node)
-		    var parentNode = $("#tree").treeview("getNode", node.parentId);  //获取父节点
-            //var selectNodes = getChildNodeIdArr(node);     
-            setParentNodeCheck(node);
-		    nodeUncheckedSilent = false;
+		array["roleinfo"] = rolenodes
+		// alert(rolenodes)
+		// alert(JSON.stringify(nodes))
+		var form = $("#roleForm").serializeArray()
+		for (var i=0;i<form.length;i++){
+			var name = form[i].name
+			var value = form[i].value
+			array[name] = value
+			var data = JSON.stringify(array)
 		}
+		// alert(data)
+		$.ajax({
+			url:"role/add",
+			type:"POST",
+			dataType: "html",
+			data:data,
+			async: false,
+			// contentType: "application/json",
+			success:function (result) {
+				var arre = $.parseJSON(result)
+				// alert("success")
+				alert(arre.message)
+			},
+			error:function (xhr) {
+				alert("警告：请求返回数据失败！！！")
+				console.log(JSON.stringify(xhr))
+			}
+		})
+	})
+})
 
-	 	// 选中父节点时，选中所有子节点
-		function setParentNodeCheck(node) {   
- 	       	var parentNode = $("#tree").treeview("getNode", node.parentId);   
- 	        if (parentNode.nodes) {    
- 		        var checkedCount = 0;    
-	            for (x in parentNode.nodes) {     
-	                if (parentNode.nodes[x].state.checked) {      
-	                    checkedCount ++;     
-	               } else {      
-	                   break;     
-	               }    
-	           }    
-	           if (checkedCount == parentNode.nodes.length) {  //如果子节点全部被选 父全选
-	               $("#tree").treeview("checkNode", parentNode.nodeId);
-	               setParentNodeCheck(parentNode);    
-	           }else {   //如果子节点未全部被选 父未全选
-	               $('#tree').treeview('uncheckNode', parentNode.nodeId); 
-	               setParentNodeCheck(parentNode);        
-	           }   
-	       }  
-	   } 
+function UserSelet(name){
+	$.get(
+		"/userquery",
+		{"name":name},
+		function (data) {
+			var html = "";
+			$.each(data,function(i,obj){
+				html+="<option value='"+obj.name+"'>";
+				html+=obj.name;
+				html+="</option>";
+			});
+			$("#username").html(html);
+		},'json');
+}
 
-
-
-	   	// 取消父节点时 取消所有子节点
-	   function setChildNodeUncheck(node) { 
-	       if (node.nodes) {   
-	           var ts = [];    //当前节点子集中未被选中的集合 
-	           for (x in node.nodes) { 
-	               if (!node.nodes[x].state.checked) {  
-                   ts.push(node.nodes[x].nodeId);  
-	               } 
-	               if (node.nodes[x].nodes) {      
-	                   var getNodeDieDai = node.nodes[x];      
-	                   for (j in getNodeDieDai) {
-	                       if (!getNodeDieDai.nodes[x].state.checked) {        
-	                           ts.push(getNodeDieDai[j]); 
-	                       }    
-	                   }     
-	               }    
-           }   
-	       }
-	       return ts;  
-	   }
-
-
- 
-		//选中全部父节点
-		function checkAllParent(node){
-		    $('#tree').treeview('checkNode',node.nodeId,{silent:true});
-		    var parentNode = $('#tree').treeview('getParent',node.nodeId);
-		    if(!("id" in parentNode)){
-		        return;
-		    }else{
-		        checkAllParent(parentNode);
-		    }
-		}
-		//取消全部父节点
-		function uncheckAllParent(node){
-		    $('#tree').treeview('uncheckNode',node.nodeId,{silent:true});
-		    var siblings = $('#tree').treeview('getSiblings', node.nodeId);
-		    var parentNode = $('#tree').treeview('getParent',node.nodeId);
-		    if(!("id" in parentNode)) {
-		        return;
-		    }
-		    var isAllUnchecked = true;  //是否全部没选中
-		    for(var i in siblings){
-		        if(siblings[i].state.checked){
-		            isAllUnchecked=false;
-		            break;
-		        }
-		    }
-		    if(isAllUnchecked){
-		        uncheckAllParent(parentNode);
-		    }
-		 
-		}
- 
-		//级联选中所有子节点
-		function checkAllSon(node){
-		    $('#tree').treeview('checkNode',node.nodeId,{silent:true});
-		    if(node.nodes!=null&&node.nodes.length>0){
-		        for(var i in node.nodes){
-		            checkAllSon(node.nodes[i]);
-		        }
-		    }
-		}
-		//级联取消所有子节点
-		function uncheckAllSon(node){
-		    $('#tree').treeview('uncheckNode',node.nodeId,{silent:true});
-		    if(node.nodes!=null&&node.nodes.length>0){
-		        for(var i in node.nodes){
-		            uncheckAllSon(node.nodes[i]);
-		        }
-		    }
-		}
-
-
-        $("#btn").click(function (e) {
-
-            var arr = $('#tree').treeview('getSelected');
-
-            alert(JSON.stringify(arr));
-            for (var key in arr) {
-                alert(arr[key].id);
-            }
-
-        })
-
+$(function () {
+	$('#usertype').change(function () {
+		UserSelet(this.value)
+	})
 })

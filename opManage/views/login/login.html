@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>登录验证</title>
     <script src="http://g.alicdn.com/dingding/dinglogin/0.0.5/ddLogin.js"></script>
-    <script src="/static/js/login/jquery-1.11.3.js"></script>
+    <script src="https://code.jquery.com/jquery-3.0.0.min.js"></script>
     <script src="/static/js/login/common.js"></script>
     <style>
         div{
@@ -33,38 +33,10 @@
             text-decoration:none;
         }
     </style>
-    <script>
-        // function jdgue() {
-        //     $.ajax({
-        //         type: "get",
-        //         url:"/",
-        //         async:false,
-        //         dataType: "json",
-        //         success:function (result) {
-        //             $.each(result,function (i,obj) {
-        //                 console.log(i,obj)
-        //             })
-        //             // console.log("hello")
-        //             // alert("hello")
-        //         }
-        //     })
-        //     var xhr = createXhr();
-        //     xhr.open('get','/login',true);
-        //     xhr.onreadystatechange = function(){
-        //         if(xhr.readyState==4&&xhr.status==200){
-        //             var arr = (xhr.responseText);
-        //             console.log(arr)
-        //         }
-        //     }
-        //     xhr.send(null);
-        // }
-        // jdgue()
-    </script>
 </head>
 <body>
     <div id="login_container"></div>
-    <p style="text-align: center;padding: 0px;margin-top: 0px;color: #FF0000;">如果您还未进行注册，请点击下面链接进行注册</p>
-    <p style="text-align: center;padding: 0px;margin-top: 0px;"><a href="/register">我要注册</a></p>
+    <p style="text-align: center;padding: 0px;margin-top: 0px;color: #FF0000;">{{.result}}</p>
     <script>
         var url = encodeURIComponent("http://yunwei.cqzq6.com");
         var goto = encodeURIComponent("https://oapi.dingtalk.com/connect/oauth2/sns_authorize?appid=dingoaqx4dyl6pzb7cpssi&response_type=code&scope=snsapi_login&state=LOGIN&redirect_uri="+url)

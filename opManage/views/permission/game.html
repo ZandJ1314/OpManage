@@ -8,10 +8,65 @@
     <link rel="stylesheet" type="text/css" href="http://www.jq22.com/jquery/bootstrap-3.3.4.css">
     <script src="https://code.jquery.com/jquery-3.0.0.min.js"></script>
     <script src="http://www.jq22.com/jquery/bootstrap-3.3.4.js"></script>
-    <script src="/static/js/zxf_page.js" type="text/javascript"></script>
     <link rel="stylesheet" href="/static/css/permission/game.css">
-    <script src="/static/js/game.js" type="text/javascript"></script>
+    <script type="text/javascript" src="/static/js/game.js"></script>
+    <script>
+        function gamedetail(name){
+            var data = {"name":name}
+            $.ajax({
+                url:"game/detail",
+                type:"GET",
+                dataType: "html",
+                //将form表单序列化进行传值
+                data:JSON.stringify(data),
+                async: false,
+                // contentType: "application/json",
+                success:function (result) {
+                    var arre = $.parseJSON(result);
+                    var lens = arre.length
+                    h5 = document.getElementById("detailname");
+                    h5.innerText = name;
+                    if (lens === undefined){
+                        p = document.getElementById("detailgame")
+                        p.innerText = arre.username
+                    }else{
+                        for (var i=0;i<lens;i++){
+                            $('#detailgame').append('<li>' + arre[i].username + '</li>')
+                        }
+                    }
+                },
+                error:function (xhr) {
+                    alert("警告：请求返回数据失败！！！")
+                    console.log(JSON.stringify(xhr))
+                }
+            })
+        }
 
+        function gamedeleteBtn(name){
+            var data = {"name":name}
+            msg = "您确定要删除" + name + "吗？"
+            var bool = confirm(msg)
+            if (bool){
+                $.ajax({
+                    url:"game/delete",
+                    type:"GET",
+                    dataType: "html",
+                    data:JSON.stringify(data),
+                    async: false,
+                    // contentType: "application/json",
+                    success:function (result) {
+                        var arre = $.parseJSON(result);
+                        alert(arre.message)
+                    },
+                    error:function (xhr) {
+                        alert("警告：请求返回数据失败！！！")
+                        console.log(JSON.stringify(xhr))
+                    }
+                })
+            }
+
+        }
+    </script>
 </head>
 <body>
 <div id="wrapper">
@@ -20,12 +75,7 @@
             <header>
                 <div class="sticky-nav">
                     <span class="span-left">
-                        <img src="/static/img/headimg/Koala.jpg" class="img-circle">
-                        {{range .result}}
-                            {{if eq .issuperadministrator "0"}}
-                                <a href="#" class="name-a">{{.username}}</a>
-                            {{end}}
-                        {{end}}
+                            <a href="#" class="name-a">{{.name}}</a>
                         <span class="manage-span">超级管理员</span>
                     </span>
                     <span class="span-right">欢迎使用阿拉蕾游戏服权限管理平台</span>
@@ -38,34 +88,34 @@
                 </blockquote>
             </div>
             <div class="addgame">
-                <button type="button" class="btn btn-success btn-lg" data-toggle="modal" data-target="#myModal" id="addbtn">点击添加游戏</button>
+                <button type="button" class="btn btn-success" data-toggle="modal" data-target="#myModal" id="addbtn">点击添加游戏</button>
             </div>
 
             <div class="gametable">
                 <table class="table table-bordered">
                     <thead>
                     <tr>
-                        <td>GameId</td>
                         <td>游戏名称</td>
                         <td>游戏类型</td>
-                        <td>管理员详情</td>
                         <td>注册时间</td>
                         <td>游戏管理</td>
                     </tr>
                     </thead>
+                    <tbody>
+                    {{range .result}}
+                    <tr>
+                        <td>{{.gamename}}</td>
+                        <td>{{.gamepartment}}</td>
+                        <td>{{.createtime}}</td>
+                        <td class="manage-user">
+                            <button type="button" class="btn btn-link" data-toggle="modal" data-target="#myModal2" onclick="gamedetail({{.gamename}})">详情</button>
+                            <button type="button" class="btn btn-link" onclick="gamedeleteBtn({{.gamename}})">删除</button>
+                        </td>
+                    </tr>
+                    {{end}}
+                    </tbody>
                 </table>
             </div>
-            <div class="zxf_pagediv">
-            </div>
-            <script>
-                $(".zxf_pagediv").createPage({
-                    pageNum: 5,
-                    current: 1,
-                    backfun: function(e) {
-                        //console.log(e);//回调
-                    }
-                });
-            </script>
 
         </div>
     </div>
@@ -77,24 +127,25 @@
                         <span aria-hidden="true">×</span></button>
                     <h4 class="modal-title" id="myModalLabel" style="color:#5CADAD;">添加游戏</h4>
                 </div>
-                <form class="form-horizontal" role="form">
+                <form class="form-horizontal" role="form" method="post" enctype="multipart/form-data" id="addForm">
+                    {{ .xsrfdata }}
                     <div class="modal-body">
-                        <div class="select-game">
-                            <p>游戏Id</p>
-                            <input type="text" class="form-control" id="gameid" placeholder="请输入游戏Id" name="gameid">
-                        </div>
+                        {{/*<div class="select-game">*/}}
+                            {{/*<p>游戏Id</p>*/}}
+                            {{/*<input type="text" class="form-control" id="gameid" placeholder="请输入游戏Id" name="gameid">*/}}
+                        {{/*</div>*/}}
                         <div class="select-game">
                             <p>游戏名称</p>
                             <input type="text" class="form-control" id="gamename" placeholder="请输入游戏名称" name="gamename">
                         </div>
-                        <div class="select-game" id="game_username">
-                            <p>请选择绑定的管理员</p>
-                            <select>
-                                <option value="1">张凡</option>
-                                <option value="2">钟涛</option>
-                                <option value="3">罗国玲</option>
-                            </select>
-                        </div>
+                        {{/*<div class="select-game" id="game_username">*/}}
+                            {{/*<p>请选择绑定的管理员</p>*/}}
+                            {{/*<select name="username">*/}}
+                                {{/*<option value="1">张凡</option>*/}}
+                                {{/*<option value="2">钟涛</option>*/}}
+                                {{/*<option value="3">罗国玲</option>*/}}
+                            {{/*</select>*/}}
+                        {{/*</div>*/}}
                         <div class="select-game">
                             <!-- <label for="rolename" class="col-sm-5 control-label">请选择是否需要更改上级权限</label> -->
                             <p>请选择是否需要新增游戏类型</p>
@@ -103,13 +154,13 @@
                         </div>
                         <div class="select-game" id="addgametype">
                             <p style="margin-left: 20px;">游戏类型</p>
-                            <input type="text" class="form-control" placeholder="请输入游戏类型" name="gametype" style="margin-left: 20px;">
+                            <input type="text" class="form-control" placeholder="请输入游戏类型" name="addgametype" style="margin-left: 20px;">
                         </div>
                         <div class="select-game" id="gametype">
-                            <select>
-                                <option value="1">张凡</option>
-                                <option value="2">钟涛</option>
-                                <option value="3">罗国玲</option>
+                            <select name="gametype">
+                                {{range .result}}
+                                <option value={{.gamepartment}}>{{.gamepartment}}</option>
+                                {{end}}
                             </select>
                         </div>
 
@@ -118,13 +169,34 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default" data-dismiss="modal">关闭
                         </button>
-                        <button type="submit" class="btn btn-primary">
+                        <button type="submit" class="btn btn-primary" id="gameaddbtn">
                             确认添加
                         </button>
                     </div>
                 </form>
             </div>
         </div><!-- /.modal-content -->
+    </div>
+    <div class="modal fade" id="myModal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <a class="close" href="/game" style="color: #000000;text-decoration: none;">
+                        <span aria-hidden="true">×</span></a>
+                    <h4 class="modal-title" id="myModalLabel" style="color:#5CADAD;">游戏详情</h4>
+                </div>
+                <div class="modal-body">
+                    <h4 id="detailname" style="color:#5CADAD;"></h4>
+                    <h5 style="color: #FF0000">管理该游戏的管理员有:</h5>
+                    <div id="detailgame">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <a class="btn btn-default" href="/game" style="color: #5CADAD;text-decoration: none;" role="button">关闭</a>
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
     <!-- Sidebar -->
     <nav class="navbar navbar-inverse navbar-fixed-top" id="sidebar-wrapper" role="navigation">
@@ -136,19 +208,19 @@
                 </a>
             </li>
             <li>
-                <a href="/user"><i class="fa fa-fw fa-home"></i> 管理员</a>
+                <a href="/user?name={{.name}}&head={{.head}}"><i class="fa fa-fw fa-home"></i> 管理员</a>
             </li>
             <li>
-                <a href="/role"><i class="fa fa-fw fa-folder"></i> 角色管理</a>
+                <a href="/role?name={{.name}}&head={{.head}}"><i class="fa fa-fw fa-folder"></i> 角色管理</a>
             </li>
             <li>
-                <a href="/permission"><i class="fa fa-fw fa-twitter"></i> 权限因子</a>
+                <a href="/permission?name={{.name}}&head={{.head}}"><i class="fa fa-fw fa-twitter"></i> 权限因子</a>
             </li>
             <li>
-                <a href="/game"><i class="fa fa-fw fa-cog"></i> 游戏管理</a>
+                <a href="/game?name={{.name}}&head={{.head}}"><i class="fa fa-fw fa-cog"></i> 游戏管理</a>
             </li>
             <li>
-                <a href="/system"><i class="fa fa-fw fa-bank"></i> 关于系统</a>
+                <a href="/system?name={{.name}}&head={{.head}}"><i class="fa fa-fw fa-bank"></i> 关于系统</a>
             </li>
         </ul>
     </nav>
@@ -167,8 +239,8 @@
                 <div class="col-lg-8 col-lg-offset-2">
                     <div class="page-header">
                             <span class="span-left">
-                                <img src="css/Koala.jpg" class="img-circle">
-                                <a href="#" class="name-a">张凡</a>
+                                <img src="/static/img/headimg/{{.head}}" class="img-circle">
+                                <a href="#" class="name-a">{{.name}}</a>
                                 <span class="manage-span">超级管理员</span>
                             </span>
                         <span class="span-right">欢迎使用阿拉蕾游戏服管理平台</span>

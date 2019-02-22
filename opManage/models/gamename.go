@@ -8,13 +8,13 @@ import (
 
 type GameName struct {
 	Id int
-	GameId int
 	Gamename string
+	GamePartment string
 	CreateTime time.Time `orm:"auto_now_add;type(datetime)"`
 	UpdateTime time.Time `orm:"auto_now;type(datetime);null"`
-	User *User `orm:"rel(fk)"`
-	Gametype *GameType `orm:"rel(fk)"`
-	Role []*Role `orm:"reverse(many)"`
+	//User *User `orm:"rel(fk)"`
+	//Gametype *GameType `orm:"rel(fk)"`
+	//Role []*Role `orm:"reverse(many)"`
 }
 
 
@@ -22,7 +22,7 @@ func (g *GameName) TableName() string{
 	return TableName("gamename")
 }
 
-func GameNameAdd(g *GameType) (int64,error) {
+func GameNameAdd(g *GameName) (int64,error) {
 	return orm.NewOrm().Insert(g)
 }
 
@@ -50,4 +50,10 @@ func (g *GameName) GamenameUpdate(fields ...string) error {
 		return err
 	}
 	return nil
+}
+
+func GameDelete(name string) (int64,error){
+	query := orm.NewOrm().QueryTable(TableName("gamename"))
+	num,err := query.Filter("game_name",name).Delete()
+	return num,err
 }

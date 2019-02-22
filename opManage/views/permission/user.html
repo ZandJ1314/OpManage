@@ -2,59 +2,58 @@
 <html lang="zh">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"> 
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>中控平台</title>
     <link rel="stylesheet" type="text/css" href="http://www.jq22.com/jquery/bootstrap-3.3.4.css">
+    <script src="https://code.jquery.com/jquery-3.0.0.min.js"></script>
+    <script src="http://www.jq22.com/jquery/bootstrap-3.3.4.js"></script>
     <link rel="stylesheet" href="/static/css/permission/user.css">
+    <script src="/static/js/user.js" type="text/javascript"></script>
 
 </head>
 <body>
-    <div id="wrapper">
-        <div class="overlay">
-            <div class="sticky">
-                <header>
+<div id="wrapper">
+    <div class="overlay">
+        <div class="sticky">
+            <header>
                 <div class="sticky-nav">
                     <span class="span-left">
-                        <img src="/static/img/headimg/Koala.jpg" class="img-circle">
-                        {{range .result}}
-                        {{if eq .issuperadministrator "0"}}
-                            <a href="#" class="name-a">{{.username}}</a>
-                        {{end}}
-                        {{end}}
+                            <a href="#" class="name-a">{{.name}}</a>
                         <span class="manage-span">超级管理员</span>
                     </span>
                     <span class="span-right">欢迎使用阿拉蕾游戏服权限管理平台</span>
                 </div>
-                </header>
-                <div class="showtable">
-                    <h4>管理员列表</h4>
-                    <div class="search">
-                        <form>
-                            <input type="text" value="" placeholder="search...">
-                            <input type="submit" value="查询">
-                        </form>
-                    </div>
+            </header>
+            <div class="showtable">
+                <h4>管理员列表</h4>
+                <div class="search">
+                    <form>
+                        <input type="text" value="" placeholder="search...">
+                        <input type="submit" value="查询">
+                    </form>
                 </div>
-                <div class="usertable">
-                    <table class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <td>ID</td>
-                                <td>用户名</td>
-                                <td>电话号码</td>
-                                <td>电子邮箱</td>
-                                <td>超级管理员</td>
-                                <td>个人详情</td>
-                                <td>注册时间</td>
-                                <td>用户管理</td>
-                            </tr>
-                        </thead>
-                        <tabody>
-                            {{range .result}}
+            </div>
+            <div class="usertable" style="margin-right: 40px;">
+                <table class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <td>ID</td>
+                        <td>用户名</td>
+                        <td>所属部门</td>
+                        <td>电话号码</td>
+                        <td>电子邮箱</td>
+                        <td>超级管理员</td>
+                        <td>注册时间</td>
+                        <td>用户管理</td>
+                    </tr>
+                    </thead>
+                    <tabody>
+                        {{range .result}}
                             <tr>
                                 <td>{{.openid}}</td>
-                                <td>{{.username}}</td>
+                                <td id="deletename">{{.username}}</td>
+                                <td>{{.department}}</td>
                                 <td>{{.phonenumber}}</td>
                                 <td>{{.emailadress}}</td>
                                 {{if eq .issuperadministrator "0"}}
@@ -62,120 +61,184 @@
                                 {{else}}
                                     <td>NO</td>
                                 {{end}}
-                                <td><a href="#" style="text-decoration: none;">点击查看</a></td>
                                 <td>{{.createtime}}</td>
                                 <td class="manage-user">
-                                    <a href="#">禁用</a>
-                                    <a href="#">删除</a>
+                                    {{/*<a class="btn btn-link" href="/user/detail?name={{.username}}" role="button" onclick="detail({{.username}})">详情</a>*/}}
+                                    <button type="button" class="btn btn-link" data-toggle="modal" data-target="#myModal2" onclick="detail({{.username}})">详情</button>
+                                    <button type="button" class="btn btn-link" onclick="deleteBtn({{.username}})">删除</button>
+                                    {{/*<a class="btn btn-link" href="/user/delete?name={{.username}}" role="button" id="deleteBtn">删除</a>*/}}
                                 </td>
                             </tr>
-                            {{end}}
-                        </tabody>
-                    </table>
-                </div>
-                <div class="zxf_pagediv">
-                </div>
-                <script src="/static/js/jquery.min.js" type="text/javascript"></script>
-                <script src="/static/js/zxf_page.js" type="text/javascript"></script>
-                <script type="text/javascript">
-                    $(".zxf_pagediv").createPage({
-                        pageNum: 5,
-                        current: 1,
-                        backfun: function(e) {
-                        //console.log(e);//回调
-                        }
-                    });
-                </script>
-             
+                        {{end}}
+                    </tabody>
+                </table>
+                <button type="button" class="btn btn-success" data-toggle="modal" data-target="#myModal" id="addbtn">点击添加管理员</button>
             </div>
-        </div>
-        <!-- Sidebar -->
-        <nav class="navbar navbar-inverse navbar-fixed-top" id="sidebar-wrapper" role="navigation">
-            <ul class="nav sidebar-nav">
-                <li class="sidebar-brand">
-                        <a class="t1">权限管理平台</a>
-                        <a href="/" class="t2">
-                          <span class="glyphicon glyphicon-th-list"></span>
-                        </a>
-                </li>
-                <li>
-                    <a href="/user"><i class="fa fa-fw fa-home"></i> 管理员</a>
-                </li>
-                <li>
-                    <a href="/role"><i class="fa fa-fw fa-folder"></i> 角色管理</a>
-                </li>
-                <li>
-                    <a href="/permission"><i class="fa fa-fw fa-twitter"></i> 权限因子</a>
-                </li>
-                <li>
-                    <a href="/game"><i class="fa fa-fw fa-cog"></i> 游戏管理</a>
-                </li>
-                <li>
-                    <a href="/system"><i class="fa fa-fw fa-bank"></i> 关于系统</a>
-                </li>
-            </ul>
-        </nav>
-        <!-- /#sidebar-wrapper -->
 
-        <!-- Page Content -->
-        <div id="page-content-wrapper">
-            <a class="a-right">
-                <span class="glyphicon glyphicon-log-out"></span>
-                    注销
-            </a>
-            <a href="#" class="a-right"><span class="glyphicon glyphicon-cog"></span>设置</a>
-        
-            <div class="container">
-                <div class="row">
-                    <div class="col-lg-8 col-lg-offset-2">
-                        <div class="page-header">
-                            <span class="span-left">
-                                <img src="css/Koala.jpg" class="img-circle">
-                                <a href="#" class="name-a">张凡</a>
-                                <span class="manage-span">超级管理员</span>
-                            </span>
-                            <span class="span-right">欢迎使用阿拉蕾游戏服管理平台</span>
+        </div>
+    </div>
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span></button>
+                    <h4 class="modal-title" id="myModalLabel" style="color:#5CADAD;">添加管理员</h4>
+                </div>
+                <form class="form-horizontal" role="form" method="post" enctype="multipart/form-data" id="addForm">
+                    {{ .xsrfdata }}
+                    <div class="modal-body">
+                        <div class="select-user" style="margin-left: 20px;">
+                            <p style="color:#f80;">管理员姓名</p>
+                            <input style="top: 0;left: 0;width:300px;height:35px;font:14px 华文楷体;color: #f80;" type="text" class="form-control" id="username" placeholder="请输入管理员姓名" name="username">
                         </div>
-                        <div class="order">
-                            <span class="glyphicon glyphicon-th-large"></span>
-                            <span class="text">可以登陆的后台</span>
+                        <div class="select-user" id="userlevel" style="margin-left: 20px;">
+                            <p style="color:#f80;">管理员类型</p>
+                            <select name="userlevel" style="width: 300px;height: 35px;border-radius: 5px;position: relative;font: 14px 华文楷体;color: #f80;">
+                                <option value="普通管理员">普通管理员</option>
+                                <option value="超级管理员">超级管理员</option>
+                            </select>
                         </div>
-                        <div class="game-type">
-                            <h4>U3D手游</h4>
-                            <span class="game-name"><a href="#">烈火封神</a></span>
-                            <span class="game-name"><a href="#">烈火封神</a></span>
-                            <span class="game-name"><a href="#">烈火封神</a></span>
-                            <span class="game-name"><a href="#">烈火封神</a></span>
+                        <div class="select-user" style="margin-left: 20px;">
+                            <!-- <label for="rolename" class="col-sm-5 control-label">请选择是否需要更改上级权限</label> -->
+                            <p style="color:#f80;">请选择是否需要新增管理员组别</p>
+                            <input style="width: 60px;height: 15px;" type="radio" name="bedStatus" id="allot" value="allot">是
+                            <input style="width: 60px;height: 15px;" type="radio" name="bedStatus" id="transfer" value="transfer" checked="checked">否
                         </div>
-                        <div class="game-type">
-                            <h4>U3D手游</h4>
-                            <span class="game-name"><a href="#">烈火封神</a></span>
-                            <span class="game-name"><a href="#">烈火封神</a></span>
-                            <span class="game-name"><a href="#">烈火封神</a></span>
-                            <span class="game-name"><a href="#">烈火封神</a></span>
+                        <div class="select-user" id="addusertype" style="margin-left: 20px;">
+                            <p style="margin-left:20px;color: #f80;">管理员组别</p>
+                            <input style="margin-left:20px;top: 0;left: 0;width:300px;height:35px;font:14px 华文楷体;color: #f80;" type="text" class="form-control" placeholder="请输入管理员类型" name="addusertype" style="margin-left: 20px;">
                         </div>
-                        <div class="game-type">
-                            <h4>U3D手游</h4>
-                            <span class="game-name"><a href="#">烈火封神</a></span>
-                            <span class="game-name"><a href="#">烈火封神</a></span>
-                            <span class="game-name"><a href="#">烈火封神</a></span>
-                            <span class="game-name"><a href="#">烈火封神</a></span>
-                        </div>
-                        <div class="game-type">
-                            <h4>U3D手游</h4>
-                            <span class="game-name"><a href="#">烈火封神</a></span>
-                            <span class="game-name"><a href="#">烈火封神</a></span>
-                            <span class="game-name"><a href="#">烈火封神</a></span>
-                            <span class="game-name"><a href="#">烈火封神</a></span>
+                        <div class="select-user" id="usertype" style="margin-left: 20px;">
+                            <select name="usertype" style="width: 300px;height: 35px;border-radius: 5px;position: relative;font: 14px 华文楷体;color: #f80;">
+                                {{range .result2}}
+                                    <option value={{.usertypename}}>{{.usertypename}}</option>
+                                {{end}}
+                            </select>
                         </div>
                     </div>
-
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">关闭
+                        </button>
+                        <button type="submit" class="btn btn-primary" id="useraddbtn">
+                            确认添加
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div><!-- /.modal-content -->
+    </div>
+    <div class="modal fade" id="myModal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <a class="close" href="/user" style="color: #000000;text-decoration: none;">
+                        <span aria-hidden="true">×</span></a>
+                    <h4 class="modal-title" id="myModalLabel" style="color:#5CADAD;">管理员详情</h4>
+                </div>
+                <div class="modal-body">
+                    <h4 id="detailname" style="color:#5CADAD;"></h4>
+                    <h5 style="color: #FF0000">管理的游戏：</h5>
+                    <div id="detailgame">
+                        <ul id="gamename">
+                        </ul>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <a class="btn btn-default" href="/user" style="color: #5CADAD;text-decoration: none;" role="button">关闭</a>
+                    {{/*<button type="button" class="btn btn-default" data-dismiss="modal"><a href="/user" style="color: #5CADAD;text-decoration: none;">关闭</a>*/}}
+                    </button>
                 </div>
             </div>
-
         </div>
-        <!-- /#page-content-wrapper -->
+    </div>
+    <!-- Sidebar -->
+    <nav class="navbar navbar-inverse navbar-fixed-top" id="sidebar-wrapper" role="navigation">
+        <ul class="nav sidebar-nav">
+            <li class="sidebar-brand">
+                <a class="t1">权限管理平台</a>
+                <a href="/" class="t2">
+                    <span class="glyphicon glyphicon-th-list"></span>
+                </a>
+            </li>
+            <li>
+                <a href="/user?name={{.name}}&head={{.head}}"><i class="fa fa-fw fa-home"></i> 管理员</a>
+            </li>
+            <li>
+                <a href="/role?name={{.name}}&head={{.head}}"><i class="fa fa-fw fa-folder"></i> 角色管理</a>
+            </li>
+            <li>
+                <a href="/permission?name={{.name}}&head={{.head}}"><i class="fa fa-fw fa-twitter"></i> 权限因子</a>
+            </li>
+            <li>
+                <a href="/game?name={{.name}}&head={{.head}}"><i class="fa fa-fw fa-cog"></i> 游戏管理</a>
+            </li>
+            <li>
+                <a href="/system?name={{.name}}&head={{.head}}"><i class="fa fa-fw fa-bank"></i> 关于系统</a>
+            </li>
+        </ul>
+    </nav>
+    <!-- /#sidebar-wrapper -->
+
+    <!-- Page Content -->
+    <div id="page-content-wrapper">
+        <a class="a-right">
+            <span class="glyphicon glyphicon-log-out"></span>
+            注销
+        </a>
+        <a href="#" class="a-right"><span class="glyphicon glyphicon-cog"></span>设置</a>
+
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2">
+                    <div class="page-header">
+                            <span class="span-left">
+                                <img src="/static/img/headimg/{{.head}}" class="img-circle">
+                                <a href="#" class="name-a">{{.name}}</a>
+                                <span class="manage-span">超级管理员</span>
+                            </span>
+                        <span class="span-right">欢迎使用阿拉蕾游戏服管理平台</span>
+                    </div>
+                    <div class="order">
+                        <span class="glyphicon glyphicon-th-large"></span>
+                        <span class="text">可以登陆的后台</span>
+                    </div>
+                    <div class="game-type">
+                        <h4>U3D手游</h4>
+                        <span class="game-name"><a href="#">烈火封神</a></span>
+                        <span class="game-name"><a href="#">烈火封神</a></span>
+                        <span class="game-name"><a href="#">烈火封神</a></span>
+                        <span class="game-name"><a href="#">烈火封神</a></span>
+                    </div>
+                    <div class="game-type">
+                        <h4>U3D手游</h4>
+                        <span class="game-name"><a href="#">烈火封神</a></span>
+                        <span class="game-name"><a href="#">烈火封神</a></span>
+                        <span class="game-name"><a href="#">烈火封神</a></span>
+                        <span class="game-name"><a href="#">烈火封神</a></span>
+                    </div>
+                    <div class="game-type">
+                        <h4>U3D手游</h4>
+                        <span class="game-name"><a href="#">烈火封神</a></span>
+                        <span class="game-name"><a href="#">烈火封神</a></span>
+                        <span class="game-name"><a href="#">烈火封神</a></span>
+                        <span class="game-name"><a href="#">烈火封神</a></span>
+                    </div>
+                    <div class="game-type">
+                        <h4>U3D手游</h4>
+                        <span class="game-name"><a href="#">烈火封神</a></span>
+                        <span class="game-name"><a href="#">烈火封神</a></span>
+                        <span class="game-name"><a href="#">烈火封神</a></span>
+                        <span class="game-name"><a href="#">烈火封神</a></span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
 
     </div>
+    <!-- /#page-content-wrapper -->
+
+</div>
 </body>
 </html>

@@ -301,12 +301,12 @@ td{
 
 .manage-user > a:link{
   text-decoration: none;
-  color: #8E8E8E;
+  color: #4F9D9D;
 }
 .manage-user > a:hover{
-  text-decoration: none;
   color: red;
 }
+
 
 /*.page-bottom{
   position:fixed;
@@ -386,3 +386,40 @@ span.disabled{
   line-height: 35px;
   border: 1px solid #dfdfdf;
 }
+
+/*.select-user{*/
+  /*margin-left: 20px;*/
+/*}*/
+
+/*.select-user select{*/
+  /*width: 300px;*/
+  /*height: 35px;*/
+  /*border-radius: 5px;*/
+  /*position: relative;*/
+/*}*/
+/*select select{*/
+  /*top: 0;*/
+  /*left: 0;*/
+  /*width: 300px;*/
+  /*height: 35px;*/
+  /*font: 14px 华文楷体;*/
+  /*color: #f80;*/
+/*}*/
+
+/*.select-user input{*/
+  /*top: 0;*/
+  /*left: 0;*/
+  /*width: 300px;*/
+  /*height: 35px;*/
+  /*font: 14px 华文楷体;*/
+  /*color: #f80;*/
+/*}*/
+
+/*.select-user p{*/
+  /*color: #f80;*/
+/*}*/
+
+/*.select-user > #allot,#transfer{*/
+  /*width: 60px;*/
+  /*height: 15px;*/
+/*}*/

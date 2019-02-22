@@ -8,17 +8,19 @@ import (
 
 type User struct {
 	Id int
-	Openid string
+	Openid string `orm:"null"`
 	UserName string
+	Department string
 	PhoneNumber string `orm:"null"`
 	EmailAdress string `orm:"null"`
 	HeadPortraitName string `orm:"null"`
-	ManageName string `orm:"default(普通管理员)"`
-	Issuperadministrator int `orm:"default(1)"`
+	ManageName string
+	Issuperadministrator int
 	CreateTime time.Time `orm:"auto_now_add;type(datetime)"`  //第一次保存时才设置时间
 	UpdateTime time.Time `orm:"auto_now;type(datetime);null"`   //每一次宝宝都会对时间进行更新
-	Gametype []*GameType `orm:"reverse(many)"`
-	Gamename []*GameName `orm:"reverse(many)"`
+	//UserType *UserType `orm:"rel(fk)"`//设置一对多反向关系
+	//Gametype []*GameType `orm:"reverse(many)"`
+	//Gamename []*GameName `orm:"reverse(many)"`
 }
 
 
@@ -56,8 +58,8 @@ func (u *User) UserUpdate(fileds ...string) error {
 	return nil
 }
 
-func UserDelete(openid string) (int64,error){
+func UserDelete(name string) (int64,error){
 	query := orm.NewOrm().QueryTable(TableName("user"))
-	num,err := query.Filter("openid",openid).Delete()
+	num,err := query.Filter("user_name",name).Delete()
 	return num,err
 }

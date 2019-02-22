@@ -83,7 +83,7 @@ html {
     z-index: -1;
 }
 
-.sidebar-nav li:nth-child(2){
+.sidebar-nav li:nth-child(2):before{
     background-color: #402d5c;
 }
 .sidebar-nav li:nth-child(3):before {
@@ -92,7 +92,7 @@ html {
 .sidebar-nav li:nth-child(4):before {
     background-color: #583e7e;
 }
-.sidebar-nav li:nth-child(5):before {
+.sidebar-nav li:nth-child(5) {
     background-color: #64468f;
 }
 .sidebar-nav li:nth-child(6):before {
@@ -276,7 +276,7 @@ td{
 
 .manage-user > a:link{
     text-decoration: none;
-    color: #8E8E8E;
+    color: #4F9D9D;
 }
 .manage-user > a:hover{
     text-decoration: none;

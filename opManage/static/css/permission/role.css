@@ -381,32 +381,25 @@ body a:hover {
 }
 
 #select-all{
-  height: 400px;
-  margin-top: 80px;
+  margin-top: 40px;
   margin-left: 30px;
 }
-
-.select-user{
-  margin-top:100px;
+#select-alter{
   margin-left: 100px;
+  width: 40%;
+  float: left;
+}
+
+.select-one{
   width: 300px;
-  height: 200px;
-  float: left;
+  margin-top: 50px;
 }
 
-
-.select-game{
-  margin-top: 100px;
-  width:300px;
-  height: 200px;
-  margin-left: 100px;
-  float: left;
-}
 
 .select-role{
-  height: 200px;
-  width:30%;
-  margin-left: 100px;
+  margin-top: 50px;
+  width:40%;
+  margin-left: 50px;
   float: left;
 }
 

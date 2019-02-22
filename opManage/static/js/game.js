@@ -23,3 +23,28 @@ $(function(){
         }
     });
 });
+
+$(function () {
+    $("#gameaddbtn").click(function () {
+        $.ajax({
+            url:"game/add",
+            type:"POST",
+            dataType: "html",
+            //将form表单序列化进行传值
+            data:$("#addForm").serialize(),
+            async: false,
+            // contentType: "application/json",
+            success:function (result) {
+                var arre = $.parseJSON(result)
+                alert(arre.message)
+            },
+            error:function (xhr) {
+                alert("警告：请求返回数据失败！！！")
+                console.log(JSON.stringify(xhr))
+            }
+        })
+    })
+})
+
+
+
