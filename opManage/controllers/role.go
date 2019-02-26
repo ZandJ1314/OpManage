@@ -62,6 +62,8 @@ func (r *RoleController) Get(){
 	r.TplName = "permission/role.html"
 }
 
+
+
 func (r *RoleController) Post() {
 	name := r.GetString("name")
 	head := r.GetString("head")
@@ -102,6 +104,11 @@ func (r *RoleController) Post() {
 }
 
 
+func (r *RoleController) Prepare(){
+	r.EnableXSRF = false
+}
+
+
 func (r *RoleController) ZtreeInfo(){
 	sql := "select role_name,roleid,role_pid from op_role;"
 	o := orm.NewOrm()
@@ -125,26 +132,27 @@ func (r *RoleController) ZtreeInfo(){
 }
 
 func (r *RoleController) UserQuery() {
-	var usertype UserType
-	data := r.Ctx.Input.RequestBody
-	err := json.Unmarshal(data, &usertype)
-	if err != nil {
-		lib.NewLog().Error("json.Unmarshal is err:",err.Error())
-		fmt.Println("json.Unmarshal is err:", err.Error())
-	}
-	typename := usertype.Name
+	r.TplName = "permission/role.html"
+	name := r.GetString("typename")
 	sql := "select user_name from op_user where department = ?;"
 	o := orm.NewOrm()
 	var list []orm.ParamsList
-	res,err := o.Raw(sql,typename).ValuesList(&list)
+	res,err := o.Raw(sql,name).ValuesList(&list)
 	slice := make([]interface{},0)
+	//var request string
 	if err == nil && res > 0{
 		for i := 0;i<len(list);i++{
 			plattest := make(map[string]interface{})
 			plattest["name"] = list[i][0]
 			slice = append(slice,plattest)
 		}
-		r.Data["json"] = slice
+		r.Data["json"] = &slice
+		r.ServeJSON()
+	}else{
+		plattest := make(map[string]interface{})
+		plattest["name"] = ""
+		r.Data["json"] = &plattest
+		r.ServeJSON()
 	}
 
 }
@@ -170,4 +178,27 @@ func (r *RoleController) AddRole(){
 		r.ajaxMsg(err.Error(),Msg_Err)
 	}
 	r.ajaxMsg("权限分配成功",Msg_OK)
+}
+
+func (r *RoleController) UpdateRole() {
+	var users User
+	data := r.Ctx.Input.RequestBody
+	err := json.Unmarshal(data, &users)
+	if err != nil {
+		lib.NewLog().Error("json.Unmarshal is err:",err.Error())
+		fmt.Println("json.Unmarshal is err:", err.Error())
+	}
+	name := users.UserName
+	GiveRole,_ := models.GiveRoleGetByUsername(name)
+	GiveRole.GameName = users.GameName
+	str,err := json.Marshal(users.RoleInfo)
+	roleinfo := string(str)
+	GiveRole.Role = roleinfo
+	if err := GiveRole.GiveRoleUpdate();err != nil{
+		lib.NewLog().Error("failed",err)
+		r.ajaxMsg(err.Error(),Msg_Err)
+	}else{
+		r.ajaxMsg("角色重新分配修改成功",Msg_OK)
+	}
+
 }

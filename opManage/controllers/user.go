@@ -129,21 +129,30 @@ func (u *UserController) AddUser(){
 		usertype = u.GetString("usertype")
 	}
 	if userlevel == "普通管理员"{
-		issuperadministrator = 1
-	}else{
 		issuperadministrator = 0
+	}else{
+		issuperadministrator = 1
 	}
-	//newUserType,_ := models.UserTypegetByuserTypename(usertype)
-	newUser := new(models.User)
-	newUser.UserName = username
-	newUser.Department = usertype
-	newUser.Issuperadministrator = issuperadministrator
-	//newUser.UserType = newUserType
-	if _,err := models.UserAdd(newUser);err != nil{
-		lib.NewLog().Error("failed",err)
-		u.ajaxMsg(err.Error(),Msg_Err)
+	if username == "" || usertype == ""{
+		result := make(map[string]interface{})
+		result["message"] = "输入框不能为空！！"
+		u.Data["json"] = result
+		u.ServeJSON()
+	}else{
+		//newUserType,_ := models.UserTypegetByuserTypename(usertype)
+		newUser := new(models.User)
+		newUser.UserName = username
+		newUser.Department = usertype
+		newUser.ManageName = userlevel
+		newUser.Issuperadministrator = issuperadministrator
+		//newUser.UserType = newUserType
+		if _,err := models.UserAdd(newUser);err != nil{
+			lib.NewLog().Error("failed",err)
+			u.ajaxMsg(err.Error(),Msg_Err)
+		}
+		u.ajaxMsg("管理员添加成功",Msg_OK)
 	}
-	u.ajaxMsg("管理员添加成功",Msg_OK)
+
 
 }
 
@@ -193,5 +202,32 @@ func (u *UserController) Detail()  {
 		u.Data["json"] = plattest
 		lib.NewLog().Error("gamename信息提取错误",err)
 	}
+	u.ServeJSON()
+}
+
+
+func (u *UserController) Judge(){
+	name := u.GetString("name")
+	_,err := models.UserTypegetByuserTypename(name)
+	plattest := make(map[string]interface{})
+	if err == nil{
+		plattest["name"] = "false"
+	}else{
+		plattest["name"] = "true"
+	}
+	u.Data["json"] = &plattest
+	u.ServeJSON()
+}
+
+func (u *UserController) JudgeUser() {
+	name := u.GetString("name")
+	_,err := models.UsergetByusername(name)
+	plattest := make(map[string]interface{})
+	if err == nil{
+		plattest["name"] = "false"
+	}else{
+		plattest["name"] = "true"
+	}
+	u.Data["json"] = &plattest
 	u.ServeJSON()
 }

@@ -10,6 +10,71 @@
     <script src="http://www.jq22.com/jquery/bootstrap-3.3.4.js"></script>
     <link rel="stylesheet" href="/static/css/permission/user.css">
     <script src="/static/js/user.js" type="text/javascript"></script>
+    <script>
+        function deleteBtn(name) {
+            var data = {"name":name};
+            msg = "您确定要删除" + name + "吗？"
+            var bool = confirm(msg)
+            if (bool){
+                $.ajax({
+                    url:"user/delete",
+                    type:"POST",
+                    dataType: "html",
+                    //将form表单序列化进行传值
+                    data:JSON.stringify(data),
+                    async: false,
+                    // contentType: "application/json",
+                    success:function (result) {
+                        var arre = $.parseJSON(result);
+                        alert(arre.message)
+                        location.reload()
+                    },
+                    error:function (xhr) {
+                        alert("警告：请求返回数据失败！！！")
+                        console.log(JSON.stringify(xhr))
+                    }
+                })
+            }
+
+        }
+
+        $(document).ready(function(){
+            var username = $("#name-a").text()
+            $.ajax({
+                url:"index/info",
+                dataType:"json",
+                data:{username:username},
+                type:"get",
+                async:false,
+                contentType:"application/json",
+                success:function (result) {
+                    var lens = result.length
+                    if (lens === undefined){
+                        $('.game-type').text("您暂无游戏可以管理，请联系管理员为你分配权限")
+                    }
+                    var ret = []
+                    for (var i=0;i<lens;i++){
+                        ret.push(result[i].gametype)
+                    }
+                    var r = ret.filter(function(element,index,self){
+                        return self.indexOf(element) === index;
+                    });
+                    var lens2 = r.length
+                    for (var j=0;j<lens2;j++){
+                        $('.game-type').append('<h4>' + r[j] + '</h4>')
+                        for (var a=0;a<lens;a++){
+                            if (r[j] === result[a].gametype){
+                                $('.game-type').append('<span class="game-name"><a href='+'"'+"/login?name="+result[a].gamename+'"'+'>'+result[a].gamename+'</a></span>')
+                            }
+                        }
+                    }
+                },
+                error:function (xhr) {
+                    alert("error")
+                }
+            })
+        })
+    </script>
 
 </head>
 <body>
@@ -57,9 +122,9 @@
                                 <td>{{.phonenumber}}</td>
                                 <td>{{.emailadress}}</td>
                                 {{if eq .issuperadministrator "0"}}
-                                    <td>YES</td>
-                                {{else}}
                                     <td>NO</td>
+                                {{else}}
+                                    <td>YES</td>
                                 {{end}}
                                 <td>{{.createtime}}</td>
                                 <td class="manage-user">
@@ -77,12 +142,12 @@
 
         </div>
     </div>
-    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-keyboard="false">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">×</span></button>
+                    <a class="close" href="/user?name={{.name}}&head={{.head}}" style="color: #000000;text-decoration: none;">
+                        <span aria-hidden="true">×</span></a>
                     <h4 class="modal-title" id="myModalLabel" style="color:#5CADAD;">添加管理员</h4>
                 </div>
                 <form class="form-horizontal" role="form" method="post" enctype="multipart/form-data" id="addForm">
@@ -90,7 +155,7 @@
                     <div class="modal-body">
                         <div class="select-user" style="margin-left: 20px;">
                             <p style="color:#f80;">管理员姓名</p>
-                            <input style="top: 0;left: 0;width:300px;height:35px;font:14px 华文楷体;color: #f80;" type="text" class="form-control" id="username" placeholder="请输入管理员姓名" name="username">
+                            <input style="top: 0;left: 0;width:300px;height:35px;font:14px 华文楷体;color: #f80;" type="text" required="required" class="form-control" id="username" placeholder="请输入管理员姓名" name="username">
                         </div>
                         <div class="select-user" id="userlevel" style="margin-left: 20px;">
                             <p style="color:#f80;">管理员类型</p>
@@ -107,7 +172,7 @@
                         </div>
                         <div class="select-user" id="addusertype" style="margin-left: 20px;">
                             <p style="margin-left:20px;color: #f80;">管理员组别</p>
-                            <input style="margin-left:20px;top: 0;left: 0;width:300px;height:35px;font:14px 华文楷体;color: #f80;" type="text" class="form-control" placeholder="请输入管理员类型" name="addusertype" style="margin-left: 20px;">
+                            <input style="margin-left:20px;top: 0;left: 0;width:300px;height:35px;font:14px 华文楷体;color: #f80;" type="text" class="form-control" placeholder="请输入管理员类型" name="addusertype" style="margin-left: 20px;" required="required" id="usertypename">
                         </div>
                         <div class="select-user" id="usertype" style="margin-left: 20px;">
                             <select name="usertype" style="width: 300px;height: 35px;border-radius: 5px;position: relative;font: 14px 华文楷体;color: #f80;">
@@ -118,8 +183,7 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">关闭
-                        </button>
+                        <a class="btn btn-default" href="/user?name={{.name}}&head={{.head}}" style="color: #5CADAD;text-decoration: none;" role="button">关闭</a>
                         <button type="submit" class="btn btn-primary" id="useraddbtn">
                             确认添加
                         </button>
@@ -132,22 +196,22 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <a class="close" href="/user" style="color: #000000;text-decoration: none;">
+                    <a class="close" href="/user?name={{.name}}&head={{.head}}" style="color: #000000;text-decoration: none;">
                         <span aria-hidden="true">×</span></a>
                     <h4 class="modal-title" id="myModalLabel" style="color:#5CADAD;">管理员详情</h4>
                 </div>
                 <div class="modal-body">
                     <h4 id="detailname" style="color:#5CADAD;"></h4>
-                    <h5 style="color: #FF0000">管理的游戏：</h5>
+                    <h5 style="color:#ff8800;">管理的游戏：</h5>
                     <div id="detailgame">
                         <ul id="gamename">
                         </ul>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <a class="btn btn-default" href="/user" style="color: #5CADAD;text-decoration: none;" role="button">关闭</a>
-                    {{/*<button type="button" class="btn btn-default" data-dismiss="modal"><a href="/user" style="color: #5CADAD;text-decoration: none;">关闭</a>*/}}
-                    </button>
+                    <a class="btn btn-default" href="/user?name={{.name}}&head={{.head}}" style="color: #5CADAD;text-decoration: none;" role="button">关闭</a>
+                    {{/*<button type="button" class="btn btn-default" data-dismiss="modal">关闭*/}}
+                    {{/*</button>*/}}
                 </div>
             </div>
         </div>
@@ -194,7 +258,7 @@
                     <div class="page-header">
                             <span class="span-left">
                                 <img src="/static/img/headimg/{{.head}}" class="img-circle">
-                                <a href="#" class="name-a">{{.name}}</a>
+                                <a href="#" class="name-a" id="name-a">{{.name}}</a>
                                 <span class="manage-span">超级管理员</span>
                             </span>
                         <span class="span-right">欢迎使用阿拉蕾游戏服管理平台</span>
@@ -204,33 +268,8 @@
                         <span class="text">可以登陆的后台</span>
                     </div>
                     <div class="game-type">
-                        <h4>U3D手游</h4>
-                        <span class="game-name"><a href="#">烈火封神</a></span>
-                        <span class="game-name"><a href="#">烈火封神</a></span>
-                        <span class="game-name"><a href="#">烈火封神</a></span>
-                        <span class="game-name"><a href="#">烈火封神</a></span>
                     </div>
-                    <div class="game-type">
-                        <h4>U3D手游</h4>
-                        <span class="game-name"><a href="#">烈火封神</a></span>
-                        <span class="game-name"><a href="#">烈火封神</a></span>
-                        <span class="game-name"><a href="#">烈火封神</a></span>
-                        <span class="game-name"><a href="#">烈火封神</a></span>
-                    </div>
-                    <div class="game-type">
-                        <h4>U3D手游</h4>
-                        <span class="game-name"><a href="#">烈火封神</a></span>
-                        <span class="game-name"><a href="#">烈火封神</a></span>
-                        <span class="game-name"><a href="#">烈火封神</a></span>
-                        <span class="game-name"><a href="#">烈火封神</a></span>
-                    </div>
-                    <div class="game-type">
-                        <h4>U3D手游</h4>
-                        <span class="game-name"><a href="#">烈火封神</a></span>
-                        <span class="game-name"><a href="#">烈火封神</a></span>
-                        <span class="game-name"><a href="#">烈火封神</a></span>
-                        <span class="game-name"><a href="#">烈火封神</a></span>
-                    </div>
+
                 </div>
 
             </div>

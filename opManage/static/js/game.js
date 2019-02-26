@@ -37,10 +37,61 @@ $(function () {
             success:function (result) {
                 var arre = $.parseJSON(result)
                 alert(arre.message)
+
             },
             error:function (xhr) {
                 alert("警告：请求返回数据失败！！！")
                 console.log(JSON.stringify(xhr))
+            }
+        })
+    })
+})
+
+$(function () {
+    $('#gamenameselect').change(function () {
+        var name = $('#gamenameselect').val()
+        $.ajax({
+            url:"game/judgegame",
+            type: "get",
+            data:{name:name},
+            dataType: "json",
+            contentType: "application/json",
+            success:function (result) {
+                if (result.name === "false"){
+                    alert("该游戏已经存在了！！");
+                    $('#gamenameselect').val('')
+                    return false
+                }else{
+                    return true
+                }
+            },
+            error:function (xhr) {
+                alert(xhr)
+            }
+        })
+    })
+})
+
+$(function () {
+    $('#gametypeselect').change(function () {
+        var name = $('#gametypeselect').val()
+        $.ajax({
+            url:"game/judgetype",
+            type: "get",
+            data:{name:name},
+            dataType: "json",
+            contentType: "application/json",
+            success:function (result) {
+                if (result.name === "false"){
+                    alert("该游戏类型已经存在了！！");
+                    $('#gametypeselect').val('')
+                    return false
+                }else{
+                    return true
+                }
+            },
+            error:function (xhr) {
+                alert(xhr)
             }
         })
     })

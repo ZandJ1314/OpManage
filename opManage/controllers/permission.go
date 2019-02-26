@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"github.com/astaxie/beego/orm"
 	"html/template"
 	"opManage/lib"
@@ -33,14 +34,6 @@ func (p *PermissionController) PermissionInfo(){
 	p.Data["xsrfdata"]=template.HTML(p.XSRFFormHTML())
 	p.TplName = "permission/permission.html"
 }
-
-//func (p *PermissionController) Post()  {
-//	name := p.GetString("name")
-//	head := p.GetString("head")
-//	p.Data["name"] = name
-//	p.Data["head"] = head
-//	p.TplName = "permission/permission.html"
-//}
 
 func (p *PermissionController) Prepare(){
 	p.EnableXSRF = false
@@ -151,39 +144,40 @@ func (p *PermissionController) Update()  {
 	//olddetail := Role.RoleDescription
 	higherrole := p.GetString("higherrole")
 	newrolename := p.GetString("newrolename")
-	newdetail := p.GetString("newdetail")
-	if higherrole == ""{
-		Role.RoleName = newrolename
-		Role.RoleDescription = newdetail
-		if err := Role.RoleUpdate();err != nil{
-			lib.NewLog().Error("failed",err)
-			p.ajaxMsg(err.Error(),Msg_Err)
-		}else{
-			p.ajaxMsg("权限修改成功",Msg_OK)
-		}
+	if newrolename == ""{
+		result := make(map[string]interface{})
+		result["message"] = "输入框不能为空！！"
+		p.Data["json"] = result
+		p.ServeJSON()
 	}else{
-		Role.RoleName = newrolename
-		Role.RoleDescription = newdetail
-		HigherRole,_ := models.RoleGetByroleName(higherrole)
-		rolelevel := HigherRole.RoleLevel
-		newlevel,_ := strconv.ParseUint(rolelevel,0,64)
-		//newlevel,_ := strconv.Atoi(rolelevel)
-		var newroleid uint64
-		newlevel = newlevel - 1
-		Role.RoleLevel = string(newlevel)
-		Role.RolePid = HigherRole.Roleid
-		sql := "select roleid from op_role where role_pid = ?"
-		o := orm.NewOrm()
-		var list []orm.ParamsList
-		res,err := o.Raw(sql,HigherRole.Roleid).ValuesList(&list)
-		if err == nil && res > 0 {
-			var roleid interface{}
-			if len(list) == 1{
-				level := newlevel-1
-				newroleid = lib.Exponet(10,level)//数据类型是unit64
-				//a := reflect.TypeOf(newroleid).String()//判断数据类型
-				//fmt.Println(a)
+		newdetail := p.GetString("newdetail")
+		if higherrole == "所有权限"{
+			fmt.Println("first")
+			Role.RoleName = newrolename
+			Role.RoleDescription = newdetail
+			if err := Role.RoleUpdate();err != nil{
+				lib.NewLog().Error("failed",err)
+				p.ajaxMsg(err.Error(),Msg_Err)
 			}else{
+				p.ajaxMsg("权限修改成功",Msg_OK)
+			}
+		}else{
+			fmt.Println("second")
+			HigherRole,_ := models.RoleGetByroleName(higherrole)
+			rolelevel := HigherRole.RoleLevel
+			nrolelevel,_ := strconv.Atoi(rolelevel)
+			nrolelevel = nrolelevel + 1
+			str_rolelevel := strconv.Itoa(nrolelevel)
+			newrolelevel,_ := strconv.ParseUint(str_rolelevel,0,64)
+			var newroleid uint64
+			higherroleid := HigherRole.Roleid
+			rolepid := higherroleid
+			sql := "select roleid from op_role where role_pid = ?"
+			o := orm.NewOrm()
+			var list []orm.ParamsList
+			res,err := o.Raw(sql,higherroleid).ValuesList(&list)
+			if err == nil && res > 0 {
+				var roleid interface{}
 				for i:=0;i<len(list);i++{
 					roleid = list[i][0]
 				}
@@ -191,18 +185,28 @@ func (p *PermissionController) Update()  {
 				roleidold,_ := strconv.Atoi(oldroleid)
 				roleidnew := roleidold + 1
 				newroleid = uint64(roleidnew)
+
+			}else{
+				level := newrolelevel-1
+				newroleid = lib.Exponet(10,level)//数据类型是unit64
+				newroleid = newroleid * uint64(rolepid)
+				lib.NewLog().Error("failed",err)
 			}
-		}else{
-			lib.NewLog().Error("failed",err)
-		}
-		Role.Roleid = int(newroleid)
-		if err := Role.RoleUpdate();err != nil{
-			lib.NewLog().Error("failed",err)
-			p.ajaxMsg(err.Error(),Msg_Err)
-		}else{
-			p.ajaxMsg("权限修改成功",Msg_OK)
+			Role.RoleName = newrolename
+			Role.RoleDescription = newdetail
+			Role.RoleLevel = str_rolelevel
+			Role.HigherRole = higherrole
+			Role.Roleid = int(newroleid)
+			Role.RolePid = rolepid
+			if err := Role.RoleUpdate();err != nil{
+				lib.NewLog().Error("failed",err)
+				p.ajaxMsg(err.Error(),Msg_Err)
+			}else{
+				p.ajaxMsg("权限修改成功",Msg_OK)
+			}
 		}
 	}
+
 }
 
 func (p *PermissionController) Delete()  {
@@ -238,4 +242,14 @@ func (p *PermissionController) Delete()  {
 		}
 	}
 
+}
+
+func (p *PermissionController) SelectH(){
+	rolename := p.GetString("name")
+	Role,_ := models.RoleGetByroleName(rolename)
+	heighername := Role.HigherRole
+	plattest := make(map[string]interface{})
+	plattest["name"] = heighername
+	p.Data["json"] = &plattest
+	p.ServeJSON()
 }

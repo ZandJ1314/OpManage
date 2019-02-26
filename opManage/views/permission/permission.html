@@ -14,6 +14,149 @@
     <script type="text/javascript" src="/static/js/jquery.ztree.exedit.min.js"></script>
     <link rel="stylesheet" href="/static/css/permission/permission.css">
     <script type="text/javascript" src="/static/js/permission.js"></script>
+    <script>
+        var zTree;
+        var setting = {
+            view: {//表示tree的显示状态
+                dblClickExpand: false,
+                showLine: true,
+                selectedMulti: true,//表示是否允许多选
+                nameIsHTML: true,
+                fontCss : {color:"blue"},
+            },
+            data: {
+                simpleData: {
+                    enable:true,
+                    idKey: "id",
+                    pIdKey: "pId",
+                    rootPId: "0"
+                }
+            },
+            check:{
+                enable:true,
+                checkStyle:"checkbox",
+                chkboxType: { "Y":"s","N":"s" }
+            },
+            callback:{
+                onClick: zTreeOnClick
+            },
+        };
+
+        $(document).ready(function(){
+            $.ajax({
+                url:"permission/ztree",
+                dataType:"html",
+                data:{},
+                type:"post",
+                async:false,
+                // contentType:"application/json",
+                success:function (result) {
+                    zNodes = JSON.parse(result)
+                    var treeobj = $.fn.zTree.init($('#tree'), setting, zNodes);
+                    fillter(treeobj);
+                },
+                error:function (xhr) {
+                    alert("error")
+                }
+            })
+            // 获取ztree对象，三个参数一次分别是容器(zTree 的容器 className 别忘了设置为 "ztree")、参数配置、数据源
+            var zTree = $.fn.zTree.getZTreeObj("tree");//根据 treeId 获取 zTree 对象的方法,必须在初始化 zTree 以后才可以使用此方法,有了这个方法，用户不再需要自己设定全局变量来保存 zTree 初始化后得到的对象了，而且在所有回调函数中全都会返回 treeId 属性，用户可以随时使用此方法获取需要进行操作的 zTree 对象
+            zTree.selectNode(zTree.getNodeByParam("id", 0));//支持同时选中多个节点,通过 zTree 对象执行此方法
+            treeobj.expandAll(true);//设置默认全部展开
+
+        });
+        $(function(){
+            var username = $("#name-a").text()
+            $.ajax({
+                url:"index/info",
+                dataType:"json",
+                data:{username:username},
+                type:"get",
+                async:false,
+                contentType:"application/json",
+                success:function (result) {
+                    var lens = result.length
+                    if (lens === undefined){
+                        $('.game-type').text("您暂无游戏可以管理，请联系管理员为你分配权限")
+                    }
+                    var ret = []
+                    for (var i=0;i<lens;i++){
+                        ret.push(result[i].gametype)
+                    }
+                    var r = ret.filter(function(element,index,self){
+                        return self.indexOf(element) === index;
+                    });
+                    var lens2 = r.length
+                    for (var j=0;j<lens2;j++){
+                        $('.game-type').append('<h4>' + r[j] + '</h4>')
+                        for (var a=0;a<lens;a++){
+                            if (r[j] === result[a].gametype){
+                                $('.game-type').append('<span class="game-name"><a href='+'"'+"/login?name="+result[a].gamename+'"'+'>'+result[a].gamename+'</a></span>')
+                            }
+                        }
+                    }
+                },
+                error:function (xhr) {
+                    alert("error")
+                }
+            })
+        })
+
+
+        
+        function zTreeOnClick(event,treeId,treeNode) {
+            $('#rolename').val(treeNode.name)
+            $.ajax({
+                url:"permission/selecth",
+                type: "get",
+                data:{name:treeNode.name},
+                dataType: "json",
+                contentType: "application/json",
+                success:function (result) {
+                    $("#heigherrole").val(result.name)
+                },
+                error:function (xhr) {
+                    alert(xhr)
+                }
+            })
+        }
+        
+
+        function fillter(treeObj) {
+            //获得树形图对象
+            var nodeList = treeObj.getNodes();　　　　　　 //展开第一个根节点
+            for(var i = 0; i < nodeList.length; i++) { //设置节点展开第二级节点
+                treeObj.expandNode(nodeList[i], true, false, true);//打开节点 ，第一个参数表示哪个节点，第二个参数表示展开还是关闭，第三个参数表示 是否打开全部子孙节点
+                var nodespan = nodeList[i].children;
+                for(var j = 0; j < nodespan.length; j++) { //设置节点展开第三级节点
+                    treeObj.expandNode(nodespan[j], true, false, true);
+                }
+            }
+        }
+
+        $(function(){
+            $("#updatebtn").click(function(){
+                var val=$('input:radio[name="bedStatus"]:checked').val();
+                console.log(val)
+                if (val == "transfer"){
+                    document.getElementById("higher_rolename").style.display="none";
+                }else{
+                    document.getElementById("higher_rolename").style.display="inline";
+                }
+
+            })
+        })
+
+        $(function(){
+            $(":radio").click(function(){
+                if ($(this).val() == "transfer"){
+                    document.getElementById("higher_rolename").style.display="none";
+                }else{
+                    document.getElementById("higher_rolename").style.display="inline";
+                }
+            });
+        });
+    </script>
 
 
 </head>
@@ -34,16 +177,16 @@
             <div class="showpermission">
                 <h4>权限因子管理</h4>
                 <blockquote class="elem-quote">
-                    说明：新增和重置权限，请直接填写相关数据保存即可，修改和删除，请直接点击按钮进行权限节点的操作
+                    说明：新增权限，请直接填写相关数据保存即可，修改和删除，请直接点击按钮进行权限节点的操作
                 </blockquote>
-                <div id="tree" class="pre-scrollable ztree" style="background-color: white;"></div>
+                <div id="tree" class="ztree pre-scrollable" style="background-color: white;"></div>
                 <div class="querytree">
                     <form class="form-horizontal" role="form" id="addForm" method="post" enctype="multipart/form-data">
                         {{ .xsrfdata }}
                         <div class="form-group">
                             <label for="rolename" class="col-sm-2 control-label">权限名称</label>
                             <div class="col-sm-10">
-                                <input type="text" class="form-control" id="rolename" placeholder="请输入权限名称" name="role_name">
+                                <input type="text" class="form-control" id="rolename" placeholder="请输入权限名称" name="role_name" required="required">
                             </div>
                         </div>
                         <div class="form-group">
@@ -56,30 +199,14 @@
                         <div class="form-group">
                             <label for="higherrole" class="col-sm-2 control-label">上级权限</label>
                             <div class="col-sm-10">
-                                <input type="text" class="form-control" id="heigherrole" placeholder="请输入上级权限名称" name="heigher_role">
+                                <input type="text" class="form-control" id="heigherrole" placeholder="请输入上级权限名称" name="heigher_role" required="required">
                             </div>
                         </div>
-                        {{/*<div class="form-group">*/}}
-                            {{/*<label for="rolelevel" class="col-sm-2 control-label">权限等级</label>*/}}
-                            {{/*<div class="col-sm-10">*/}}
-                                {{/*<input type="text" class="form-control" id="rolelevel" placeholder="请输入权限等级,最高级为零级对应输入0，依次类推：一级、二级等" name="role_level">*/}}
-                            {{/*</div>*/}}
-                        {{/*</div>*/}}
-                        {{/*<div class="form-group">*/}}
-                            {{/*<label for="rolelevel" class="col-sm-2 control-label">游戏名称</label>*/}}
-                            {{/*<div class="col-sm-10">*/}}
-                                {{/*<select id="username" name="gamename">*/}}
-                                    {{/*<option value="烈火风神">烈火风神</option>*/}}
-                                    {{/*<option value="战神风云">战神风云</option>*/}}
-                                    {{/*<option value="猛将天下">猛将天下</option>*/}}
-                                {{/*</select>*/}}
-                            {{/*</div>*/}}
-                        {{/*</div>*/}}
                         <div class="btn-group">
                             <button type="submit" class="btn btn-success" id="roleadd">新增</button>
-                            <button type="button" class="btn btn-info" data-toggle="modal" data-target="#myModal">修改</button>
+                            <button type="button" class="btn btn-info" data-toggle="modal" data-target="#myModal" id="updatebtn">修改</button>
                             <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#myModal2">删除</button>
-                            <button type="button" class="btn btn-warning">重置</button>
+                            {{/*<button type="button" class="btn btn-warning">重置</button>*/}}
                         </div>
                     </form>
                 </div>
@@ -119,6 +246,10 @@
                                 <option value={{.rolename}}>{{.rolename}}</option>
                                 {{end}}
                             </select>
+                        </div>
+                        <div class="select-user">
+                            <p style="color: #f80;">请输入更改后的权限名称</p>
+                            <input class="form-control" id="rolename" placeholder="更改后的权限名称" name="newrolename" style="font-size: 14px;" required="required">
                         </div>
                         <div class="select-user">
                             <!-- <label for="rolename" class="col-sm-5 control-label">请选择是否需要更改上级权限</label> -->
@@ -162,7 +293,7 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default" data-dismiss="modal">关闭
                         </button>
-                        <button type="button" class="btn btn-primary" id="deletebtn">
+                        <button type="submit" class="btn btn-primary" id="deletebtn">
                             确认删除
                         </button>
                     </div>
@@ -212,7 +343,7 @@
                     <div class="page-header">
                             <span class="span-left">
                                 <img src="/static/img/headimg/{{.head}}" class="img-circle">
-                                <a href="#" class="name-a">{{.name}}</a>
+                                <a href="#" class="name-a" id="name-a">{{.name}}</a>
                                 <span class="manage-span">超级管理员</span>
                             </span>
                         <span class="span-right">欢迎使用阿拉蕾游戏服管理平台</span>
@@ -222,32 +353,6 @@
                         <span class="text">可以登陆的后台</span>
                     </div>
                     <div class="game-type">
-                        <h4>U3D手游</h4>
-                        <span class="game-name"><a href="#">烈火封神</a></span>
-                        <span class="game-name"><a href="#">烈火封神</a></span>
-                        <span class="game-name"><a href="#">烈火封神</a></span>
-                        <span class="game-name"><a href="#">烈火封神</a></span>
-                    </div>
-                    <div class="game-type">
-                        <h4>U3D手游</h4>
-                        <span class="game-name"><a href="#">烈火封神</a></span>
-                        <span class="game-name"><a href="#">烈火封神</a></span>
-                        <span class="game-name"><a href="#">烈火封神</a></span>
-                        <span class="game-name"><a href="#">烈火封神</a></span>
-                    </div>
-                    <div class="game-type">
-                        <h4>U3D手游</h4>
-                        <span class="game-name"><a href="#">烈火封神</a></span>
-                        <span class="game-name"><a href="#">烈火封神</a></span>
-                        <span class="game-name"><a href="#">烈火封神</a></span>
-                        <span class="game-name"><a href="#">烈火封神</a></span>
-                    </div>
-                    <div class="game-type">
-                        <h4>U3D手游</h4>
-                        <span class="game-name"><a href="#">烈火封神</a></span>
-                        <span class="game-name"><a href="#">烈火封神</a></span>
-                        <span class="game-name"><a href="#">烈火封神</a></span>
-                        <span class="game-name"><a href="#">烈火封神</a></span>
                     </div>
                 </div>
 

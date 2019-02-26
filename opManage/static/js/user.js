@@ -53,31 +53,6 @@ $(function () {
 //     })
 // })
 
-function deleteBtn(name) {
-    var data = {"name":name};
-    msg = "您确定要删除" + name + "吗？"
-    var bool = confirm(msg)
-    if (bool){
-        $.ajax({
-            url:"user/delete",
-            type:"POST",
-            dataType: "html",
-            //将form表单序列化进行传值
-            data:JSON.stringify(data),
-            async: false,
-            // contentType: "application/json",
-            success:function (result) {
-                var arre = $.parseJSON(result);
-                alert(arre.message)
-            },
-            error:function (xhr) {
-                alert("警告：请求返回数据失败！！！")
-                console.log(JSON.stringify(xhr))
-            }
-        })
-    }
-
-}
 
 function detail(name) {
     var data = {"name":name}
@@ -92,8 +67,8 @@ function detail(name) {
         success:function (result) {
             var arre = $.parseJSON(result);
             var lens = arre.length
-            h5 = document.getElementById("detailname");
-            h5.innerText = name;
+            h4 = document.getElementById("detailname");
+            h4.innerText = name;
             if (lens === undefined){
                 p = document.getElementById("detailgame")
                 p.innerText = arre.gamename
@@ -102,6 +77,7 @@ function detail(name) {
                     $('#detailgame').append('<li>' + arre[i].gamename + '</li>')
                 }
             }
+            // location.reload()
 
         },
         error:function (xhr) {
@@ -110,3 +86,53 @@ function detail(name) {
         }
     })
 }
+
+$(function () {
+    $('#usertypename').change(function () {
+        var name = $('#usertypename').val()
+        $.ajax({
+            url:"user/judge",
+            type: "get",
+            data:{name:name},
+            dataType: "json",
+            contentType: "application/json",
+            success:function (result) {
+                if (result.name === "false"){
+                    alert("该组名已经存在了！！");
+                    $('#usertypename').val('')
+                    return false
+                }else{
+                    return true
+                }
+            },
+            error:function (xhr) {
+                alert(xhr)
+            }
+        })
+    })
+})
+
+$(function () {
+    $('#username').change(function () {
+        var name = $('#username').val()
+        $.ajax({
+            url:"user/judgeuser",
+            type: "get",
+            data:{name:name},
+            dataType: "json",
+            contentType: "application/json",
+            success:function (result) {
+                if (result.name === "false"){
+                    alert("该管理员已经存在了！！");
+                    $('#username').val('')
+                    return false
+                }else{
+                    return true
+                }
+            },
+            error:function (xhr) {
+                alert(xhr)
+            }
+        })
+    })
+})

@@ -68,12 +68,3 @@ function checkimg() {
     return true
 }
 
-
-// function checkfun() {
-//     if (checknumber() && checkemail() && checkimg()){
-//         return true;
-//     }
-//     alert("请检查您的填写格式");
-//     return false;
-// }
-

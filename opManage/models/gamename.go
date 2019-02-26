@@ -54,6 +54,6 @@ func (g *GameName) GamenameUpdate(fields ...string) error {
 
 func GameDelete(name string) (int64,error){
 	query := orm.NewOrm().QueryTable(TableName("gamename"))
-	num,err := query.Filter("game_name",name).Delete()
+	num,err := query.Filter("gamename",name).Delete()
 	return num,err
 }

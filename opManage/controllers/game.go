@@ -58,6 +58,10 @@ func (g *GameController) GameInfo() {
 	g.TplName = "permission/game.html"
 }
 
+func (g *GameController) Prepare(){
+	g.EnableXSRF = false
+}
+
 
 func (g *GameController) AddGame() {
 	gamename := g.GetString("gamename")
@@ -73,31 +77,36 @@ func (g *GameController) AddGame() {
 	}else{
 		gametype = g.GetString("gametype")
 	}
-	//newGameType,_ := models.GameTypeGetByGameTypeName(gametype)
-	newGame := new(models.GameName)
-	newGame.Gamename = gamename
-	newGame.GamePartment = gametype
-	//newGame.Gametype = newGameType
-	//newGame.User = User
-	if _,err := models.GameNameAdd(newGame);err != nil{
-		lib.NewLog().Error("failed",err)
-		g.ajaxMsg(err.Error(),Msg_Err)
+	if gamename == "" || gametype == ""{
+		result := make(map[string]interface{})
+		result["message"] = "输入框不能为空！！"
+		g.Data["json"] = result
+		g.ServeJSON()
+	}else{
+		//newGameType,_ := models.GameTypeGetByGameTypeName(gametype)
+		newGame := new(models.GameName)
+		newGame.Gamename = gamename
+		newGame.GamePartment = gametype
+		//newGame.Gametype = newGameType
+		//newGame.User = User
+		if _,err := models.GameNameAdd(newGame);err != nil{
+			lib.NewLog().Error("failed",err)
+			g.ajaxMsg(err.Error(),Msg_Err)
+		}
+		g.ajaxMsg("游戏增加成功",Msg_OK)
 	}
-	g.ajaxMsg("游戏增加成功",Msg_OK)
+
 
 }
 
 func (g *GameController) GameDelete(){
 	var delgame DelGame
 	data := g.Ctx.Input.RequestBody
-	fmt.Println(data)
 	err := json.Unmarshal(data,&delgame)
-	fmt.Println(err)
 	if err != nil{
 		lib.NewLog().Error("json.Unmarshal is err:",err.Error())
 	}
 	gamename := delgame.Name
-	fmt.Println(gamename)
 	num,err := models.GameDelete(gamename)
 	if num >0 && err == nil{
 		msg := gamename + "已经成功删除了！"
@@ -119,6 +128,7 @@ func (g *GameController) GameDetail() {
 	res,err := o.Raw(sql,gamename).ValuesList(&list)
 	slice := make([]interface{},0)
 	if err == nil && res > 0{
+		fmt.Println("hello")
 		for i := 0;i<len(list);i++{
 			plattest := make(map[string]interface{})
 			plattest["username"] = list[i][0]
@@ -131,6 +141,32 @@ func (g *GameController) GameDetail() {
 		g.Data["json"] = plattest
 		lib.NewLog().Error("gamename信息提取错误",err)
 	}
+	g.ServeJSON()
+}
+
+func (g *GameController) JudgeGame() {
+	name := g.GetString("name")
+	_,err := models.GameNameGetByGamename(name)
+	plattest := make(map[string]interface{})
+	if err == nil{
+		plattest["name"] = "false"
+	}else{
+		plattest["name"] = "true"
+	}
+	g.Data["json"] = &plattest
+	g.ServeJSON()
+}
+
+func (g *GameController) JudgeType() {
+	name := g.GetString("name")
+	_,err := models.GameTypeGetByGameTypeName(name)
+	plattest := make(map[string]interface{})
+	if err == nil{
+		plattest["name"] = "false"
+	}else{
+		plattest["name"] = "true"
+	}
+	g.Data["json"] = &plattest
 	g.ServeJSON()
 }
 
