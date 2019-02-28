@@ -1,12 +1,13 @@
 package controllers
 
 import (
-	"fmt"
+	_ "fmt"
 	"github.com/astaxie/beego/orm"
 	"html/template"
 	"opManage/lib"
 	"opManage/models"
 	"strconv"
+	"strings"
 )
 
 type PermissionController struct {
@@ -18,7 +19,7 @@ func (p *PermissionController) PermissionInfo(){
 	head := p.GetString("head")
 	p.Data["name"] = name
 	p.Data["head"] = head
-	sql := "select role_name from op_role;"
+	sql := "select role from op_role;"
 	o := orm.NewOrm()
 	var list []orm.ParamsList
 	res,err := o.Raw(sql).ValuesList(&list)
@@ -41,7 +42,7 @@ func (p *PermissionController) Prepare(){
 
 
 func (p *PermissionController) ZtreeInfo(){
-	sql := "select role_name,roleid,role_pid from op_role;"
+	sql := "select role,role_name,roleid,role_pid from op_role;"
 	o := orm.NewOrm()
 	var list []orm.ParamsList
 	res,err := o.Raw(sql).ValuesList(&list)
@@ -49,9 +50,11 @@ func (p *PermissionController) ZtreeInfo(){
 		slice := make([]interface{},0)
 		for i := 0;i<len(list);i++{
 			plattest := make(map[string]interface{})
-			plattest["name"] = list[i][0]
-			plattest["id"] = list[i][1]
-			plattest["pId"] = list[i][2]
+			name,_ := list[i][0].(string)
+			rolename,_ := list[i][1].(string)
+			plattest["name"] = name + "("+rolename+")"
+			plattest["id"] = list[i][2]
+			plattest["pId"] = list[i][3]
 			slice = append(slice,plattest)
 		}
 		p.Data["json"] = slice
@@ -64,18 +67,18 @@ func (p *PermissionController) ZtreeInfo(){
 
 
 func (p *PermissionController) Add(){
+	role := p.GetString("baserole")
 	rolename := p.GetString("role_name")
-	roledescription := p.GetString("detail")
 	higherrole := p.GetString("heigher_role")
 	//rolelevel := p.GetString("role_level")
 	//gamename := p.GetString("gamename")
 	//GameName,_ := models.GameNameGetByGamename(gamename)
-	if rolename == "所有权限"{
+	if role == "所有权限"{
 		roleid := 0
 		rolepid := 0
 		newRole := new(models.Role)
+		newRole.Role = role
 		newRole.RoleName = rolename
-		newRole.RoleDescription = roledescription
 		newRole.RoleLevel = "0"
 		newRole.HigherRole = higherrole
 		newRole.Roleid = roleid
@@ -121,8 +124,8 @@ func (p *PermissionController) Add(){
 			lib.NewLog().Error("failed",err)
 		}
 		newRole := new(models.Role)
+		newRole.Role = role
 		newRole.RoleName = rolename
-		newRole.RoleDescription = roledescription
 		newRole.RoleLevel = str_rolelevel
 		newRole.HigherRole = higherrole
 		newRole.Roleid = int(newroleid)
@@ -144,17 +147,16 @@ func (p *PermissionController) Update()  {
 	//olddetail := Role.RoleDescription
 	higherrole := p.GetString("higherrole")
 	newrolename := p.GetString("newrolename")
-	if newrolename == ""{
+	basenewrolename := p.GetString("basenewrolename")
+	if newrolename == "" || basenewrolename == ""{
 		result := make(map[string]interface{})
 		result["message"] = "输入框不能为空！！"
 		p.Data["json"] = result
 		p.ServeJSON()
 	}else{
-		newdetail := p.GetString("newdetail")
 		if higherrole == "所有权限"{
-			fmt.Println("first")
-			Role.RoleName = newrolename
-			Role.RoleDescription = newdetail
+			Role.Role = newrolename
+			Role.RoleName = basenewrolename
 			if err := Role.RoleUpdate();err != nil{
 				lib.NewLog().Error("failed",err)
 				p.ajaxMsg(err.Error(),Msg_Err)
@@ -162,7 +164,6 @@ func (p *PermissionController) Update()  {
 				p.ajaxMsg("权限修改成功",Msg_OK)
 			}
 		}else{
-			fmt.Println("second")
 			HigherRole,_ := models.RoleGetByroleName(higherrole)
 			rolelevel := HigherRole.RoleLevel
 			nrolelevel,_ := strconv.Atoi(rolelevel)
@@ -192,8 +193,8 @@ func (p *PermissionController) Update()  {
 				newroleid = newroleid * uint64(rolepid)
 				lib.NewLog().Error("failed",err)
 			}
-			Role.RoleName = newrolename
-			Role.RoleDescription = newdetail
+			Role.Role = newrolename
+			Role.RoleName = basenewrolename
 			Role.RoleLevel = str_rolelevel
 			Role.HigherRole = higherrole
 			Role.Roleid = int(newroleid)
@@ -246,10 +247,13 @@ func (p *PermissionController) Delete()  {
 
 func (p *PermissionController) SelectH(){
 	rolename := p.GetString("name")
-	Role,_ := models.RoleGetByroleName(rolename)
+	newrolename := strings.Split(rolename,"(")[0]
+	Role,_ := models.RoleGetByroleName(newrolename)
 	heighername := Role.HigherRole
+	role_name := Role.RoleName
 	plattest := make(map[string]interface{})
 	plattest["name"] = heighername
+	plattest["rolename"] = role_name
 	p.Data["json"] = &plattest
 	p.ServeJSON()
 }

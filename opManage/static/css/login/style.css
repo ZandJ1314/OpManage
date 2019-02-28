@@ -320,7 +320,7 @@ body a:hover {
   text-decoration:none;
 }
 .name-a:visited {
-  color:#4F9D9D;
+  color:#ff8800;
   text-decoration:none;
 }
 .name-a:hover {
@@ -352,7 +352,7 @@ body a:hover {
   margin-bottom: 10px;
 }
 .game-name > a:link{
-  color: #0000E3;
+  color: #ff8800;
   text-decoration: none;
 }
 .game-name > a:hover{

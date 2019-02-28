@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	"github.com/astaxie/beego/orm"
 	_ "github.com/go-sql-driver/mysql"
 	"time"
@@ -10,6 +11,7 @@ type User struct {
 	Id int
 	Openid string `orm:"null"`
 	UserName string
+	AlaisUserName string
 	Department string
 	PhoneNumber string `orm:"null"`
 	EmailAdress string `orm:"null"`
@@ -62,4 +64,30 @@ func UserDelete(name string) (int64,error){
 	query := orm.NewOrm().QueryTable(TableName("user"))
 	num,err := query.Filter("user_name",name).Delete()
 	return num,err
+}
+
+func SearchDataList(pagesize,pageno int) (users []User) {
+	o := orm.NewOrm()
+	qs := o.QueryTable(TableName("user"))
+	//if search !=""{
+	//	qs=qs.Filter("UserName",search)
+	//}
+	var us []User
+	cnt, err :=  qs.Limit(pagesize, (pageno-1)*pagesize).All(&us)
+	if err == nil {
+		fmt.Println("count", cnt)
+	}
+	return us
+}
+
+func GetRecordNum() int64 {
+	o := orm.NewOrm()
+	qs := o.QueryTable(TableName("user"))
+	var us []User
+	num, err :=  qs.All(&us)
+	if err == nil {
+		return num
+	}else{
+		return 0
+	}
 }

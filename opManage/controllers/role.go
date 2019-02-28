@@ -110,7 +110,7 @@ func (r *RoleController) Prepare(){
 
 
 func (r *RoleController) ZtreeInfo(){
-	sql := "select role_name,roleid,role_pid from op_role;"
+	sql := "select role,role_name,roleid,role_pid from op_role;"
 	o := orm.NewOrm()
 	var list []orm.ParamsList
 	res,err := o.Raw(sql).ValuesList(&list)
@@ -118,9 +118,11 @@ func (r *RoleController) ZtreeInfo(){
 		slice := make([]interface{},0)
 		for i := 0;i<len(list);i++{
 			plattest := make(map[string]interface{})
-			plattest["name"] = list[i][0]
-			plattest["id"] = list[i][1]
-			plattest["pId"] = list[i][2]
+			name,_ := list[i][0].(string)
+			rolename,_ := list[i][1].(string)
+			plattest["name"] = name + "("+rolename+")"
+			plattest["id"] = list[i][2]
+			plattest["pId"] = list[i][3]
 			slice = append(slice,plattest)
 		}
 		r.Data["json"] = slice

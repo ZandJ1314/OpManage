@@ -105,7 +105,7 @@
 
         
         function zTreeOnClick(event,treeId,treeNode) {
-            $('#rolename').val(treeNode.name)
+            $('#baserolename').val(treeNode.name)
             $.ajax({
                 url:"permission/selecth",
                 type: "get",
@@ -114,6 +114,7 @@
                 contentType: "application/json",
                 success:function (result) {
                     $("#heigherrole").val(result.name)
+                    $('#rolename').val(result.rolename)
                 },
                 error:function (xhr) {
                     alert(xhr)
@@ -184,22 +185,28 @@
                     <form class="form-horizontal" role="form" id="addForm" method="post" enctype="multipart/form-data">
                         {{ .xsrfdata }}
                         <div class="form-group">
-                            <label for="rolename" class="col-sm-2 control-label">权限名称</label>
+                            <label for="rolename" class="col-sm-2 control-label">权限描述</label>
                             <div class="col-sm-10">
-                                <input type="text" class="form-control" id="rolename" placeholder="请输入权限名称" name="role_name" required="required">
+                                <input type="text" class="form-control" id="baserolename" placeholder="请输入权限描述" name="baserole" required="required">
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="roledescription" class="col-sm-2 control-label">权限描述</label>
+                            <label for="rolename" class="col-sm-2 control-label">权限名称</label>
                             <div class="col-sm-10">
-                                <textarea class="form-control" id="roledescription" placeholder="请输入权限描述,尽量描述的详细一点" name="detail"></textarea>
-                                <!-- <input type="text" class="form-control" id="roledescription" placeholder="请输入权限描述"> -->
+                                <input type="text" class="form-control" id="rolename" placeholder="请输入权限名称(英文或者拼音)" name="role_name" required="required">
                             </div>
                         </div>
+                        {{/*<div class="form-group">*/}}
+                            {{/*<label for="roledescription" class="col-sm-2 control-label">权限描述</label>*/}}
+                            {{/*<div class="col-sm-10">*/}}
+                                {{/*<textarea class="form-control" id="roledescription" placeholder="请输入权限描述,尽量描述的详细一点" name="detail"></textarea>*/}}
+                                {{/*<!-- <input type="text" class="form-control" id="roledescription" placeholder="请输入权限描述"> -->*/}}
+                            {{/*</div>*/}}
+                        {{/*</div>*/}}
                         <div class="form-group">
                             <label for="higherrole" class="col-sm-2 control-label">上级权限</label>
                             <div class="col-sm-10">
-                                <input type="text" class="form-control" id="heigherrole" placeholder="请输入上级权限名称" name="heigher_role" required="required">
+                                <input type="text" class="form-control" id="heigherrole" placeholder="请输入上级权限描述" name="heigher_role" required="required">
                             </div>
                         </div>
                         <div class="btn-group">
@@ -227,7 +234,7 @@
                     <div class="modal-body">
                         <div class="select-user">
                             <!-- <label for="rolename" class="col-sm-5 control-label">请选择需要更改的权限名称</label> -->
-                            <p style="color: #f80;">请选择需要更改的权限名称</p>
+                            <p style="color: #f80;">请选择需要更改的权限</p>
                             <select id="username" name="oldrolename">
                                 {{range .result}}
                                 <option value={{.rolename}}>{{.rolename}}</option>
@@ -248,14 +255,18 @@
                             </select>
                         </div>
                         <div class="select-user">
-                            <p style="color: #f80;">请输入更改后的权限名称</p>
-                            <input class="form-control" id="rolename" placeholder="更改后的权限名称" name="newrolename" style="font-size: 14px;" required="required">
+                            <p style="color: #f80;">请输入更改后的权限描述</p>
+                            <input class="form-control" id="rolename" placeholder="请输入更改后的权限描述" name="newrolename" style="font-size: 14px;" required="required">
                         </div>
                         <div class="select-user">
-                            <!-- <label for="rolename" class="col-sm-5 control-label">请选择是否需要更改上级权限</label> -->
-                            <p style="color: #f80;">请输入修改后的权限描述</p>
-                            <textarea class="form-control" id="roledescription" placeholder="尽量描述的详细一点" name="newdetail"></textarea>
+                            <p style="color: #f80;">请输入更改后的权限名称</p>
+                            <input class="form-control" id="rolename" placeholder="更改后的权限名称(英文或拼音)" name="basenewrolename" style="font-size: 14px;" required="required">
                         </div>
+                        {{/*<div class="select-user">*/}}
+                            {{/*<!-- <label for="rolename" class="col-sm-5 control-label">请选择是否需要更改上级权限</label> -->*/}}
+                            {{/*<p style="color: #f80;">请输入修改后的权限描述</p>*/}}
+                            {{/*<textarea class="form-control" id="roledescription" placeholder="尽量描述的详细一点" name="newdetail"></textarea>*/}}
+                        {{/*</div>*/}}
 
                     </div>
                     <div class="modal-footer">

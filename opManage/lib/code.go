@@ -60,8 +60,6 @@ func GetPerpetualCode(code string,token string) (string,string) {
 	openid := strings.Split(jsonTostrOpenid,":")[1]
 	persistent_code = strings.Replace(persistent_code,"\"","",-1)
 	openid = strings.Replace(openid,"\"","",-1)
-	//fmt.Println(string(jsonStr))
-	//fmt.Println(persistent_code,openid)
 	return persistent_code,openid
 }
 
@@ -74,7 +72,6 @@ func GetSnsToken(code string,openid string,token string) string {
 	urlencode := url.Values{}
 	urlencode.Set("access_token",token)
 	ResquestUrl := baseurl + urlencode.Encode()
-	//fmt.Println(ResquestUrl)
 	responseToken,err := http.NewRequest("POST",ResquestUrl,bytes.NewBuffer(jsonData))
 	responseToken.Header.Set("Content-Type","application/json")
 	client := &http.Client{}
@@ -84,11 +81,9 @@ func GetSnsToken(code string,openid string,token string) string {
 	}
 	defer resp.Body.Close()
 	jsonStr,err := ioutil.ReadAll(resp.Body)
-	//fmt.Println(string(jsonStr),"errerrerrerreerrrrererererer")
 	if err != nil{
 		fmt.Println(err)
 	}
-	//fmt.Println(string(jsonStr))
 	errmsgdict := strings.Split(string(jsonStr),",")[0]
 	errmsg := strings.Split(string(errmsgdict),":")[1]
 	errmsg = strings.Replace(errmsg,"\"","",-1)
@@ -116,7 +111,6 @@ func GetUserInfo(token string) (string,string) {
 	if err != nil{
 		fmt.Println(err)
 	}
-	//fmt.Println(string(jsonStr))
 	errmsgdict := strings.Split(string(jsonStr),",")[0]
 	errmsg := strings.Split(string(errmsgdict),":")[0]
 	errmsg = strings.Replace(errmsg,"\"","",-1)
@@ -132,7 +126,6 @@ func GetUserInfo(token string) (string,string) {
 		openid := strings.Split(jsonTostrOpenid,":")[1]
 		openid = strings.Replace(openid,"\"","",-1)
 		openid = strings.Replace(openid,"}","",-1)
-		//fmt.Println(name,openid)
 		return name,openid
 	}
 }

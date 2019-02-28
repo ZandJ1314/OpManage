@@ -8,9 +8,10 @@
     <link rel="stylesheet" type="text/css" href="http://www.jq22.com/jquery/bootstrap-3.3.4.css">
     <script src="https://code.jquery.com/jquery-3.0.0.min.js"></script>
     <script src="http://www.jq22.com/jquery/bootstrap-3.3.4.js"></script>
+    <script src="/static/js/bootstrap-paginator.min.js"></script>
     <link rel="stylesheet" href="/static/css/permission/user.css">
-    <script src="/static/js/user.js" type="text/javascript"></script>
-    <script>
+    <script src="/static/js/user.js" type="application/javascript"></script>
+    <script type="application/javascript">
         function deleteBtn(name) {
             var data = {"name":name};
             msg = "您确定要删除" + name + "吗？"
@@ -37,6 +38,24 @@
             }
 
         }
+
+        $(function () {
+            var text = $('#pagesChose').text()
+            arr = text.split(" ")
+            str1 = arr[0].split("")
+            str2 = arr[1].split("")
+            num1 = str1.slice(-2,-1)
+            num2 = str2.slice(-2,-1)
+            var num = Number(num2[0])
+            if (num == num1[0]){
+                $('#pageDown').attr("disabled",true);
+                $("#pageDown").css("pointer-events","none");
+            }
+            if (num == 1){
+                $('#pageUp').attr("disabled",true);
+                $("#pageUp").css("pointer-events","none");
+            }
+        })
 
         $(document).ready(function(){
             var username = $("#name-a").text()
@@ -74,6 +93,72 @@
                 }
             })
         })
+
+        $(function () {
+            $("#searchBtn").click(function () {
+                var name = $('#searchText').val()
+                var data = {"name":name}
+                $.ajax({
+                    url:"user/detail",
+                    type:"POST",
+                    dataType: "html",
+                    //将form表单序列化进行传值
+                    data:JSON.stringify(data),
+                    async: false,
+                    // contentType: "application/json",
+                    success:function (result) {
+                        var arre = $.parseJSON(result);
+                        var lens = arre.length
+                        h4 = document.getElementById("detailname");
+                        h4.innerText = name;
+                        if (lens === undefined){
+                            p = document.getElementById("detailgame")
+                            p.innerText = arre.gamename
+                        }else{
+                            for (var i=0;i<lens;i++){
+                                $('#detailgame').append('<li>' + arre[i].gamename + '</li>')
+                            }
+                        }
+                        // location.reload()
+
+                    },
+                    error:function (xhr) {
+                        alert("警告：请求返回数据失败！！！")
+                        console.log(JSON.stringify(xhr))
+                    }
+                })
+            })
+        })
+
+        $(function(){
+            $("#addbtn").click(function(){
+                var val=$('input:radio[name="bedStatus"]:checked').val();
+                console.log(val)
+                if (val == "transfer"){
+                    document.getElementById("aliasaddusertype").style.display="none";
+                    document.getElementById("addusertype").style.display="none";
+                    document.getElementById("usertype").style.display="inline";
+                }else{
+                    document.getElementById("addusertype").style.display="inline";
+                    document.getElementById("aliasaddusertype").style.display="inline";
+                    document.getElementById("usertype").style.display="none";
+                }
+
+            })
+        })
+        $(function(){
+            $(":radio").click(function(){
+                if ($(this).val() == "transfer"){
+                    document.getElementById("addusertype").style.display="none";
+                    document.getElementById("aliasaddusertype").style.display = "none";
+                    document.getElementById("usertype").style.display="inline";
+                }else{
+                    document.getElementById("addusertype").style.display="inline";
+                    document.getElementById("aliasaddusertype").style.display = "inline";
+                    document.getElementById("usertype").style.display="none";
+                }
+            });
+        });
     </script>
 
 </head>
@@ -93,10 +178,8 @@
             <div class="showtable">
                 <h4>管理员列表</h4>
                 <div class="search">
-                    <form>
-                        <input type="text" value="" placeholder="search...">
-                        <input type="submit" value="查询">
-                    </form>
+                    <input type="text" placeholder="search..." id="searchText">
+                    <input type="submit" class="glyphicon glyphicon-search" value="查询" data-toggle="modal" data-target="#myModal2" id="searchBtn">
                 </div>
             </div>
             <div class="usertable" style="margin-right: 40px;">
@@ -104,6 +187,7 @@
                     <thead>
                     <tr>
                         <td>ID</td>
+                        <td>管理员</td>
                         <td>用户名</td>
                         <td>所属部门</td>
                         <td>电话号码</td>
@@ -114,32 +198,43 @@
                     </tr>
                     </thead>
                     <tabody>
-                        {{range .result}}
-                            <tr>
-                                <td>{{.openid}}</td>
-                                <td id="deletename">{{.username}}</td>
-                                <td>{{.department}}</td>
-                                <td>{{.phonenumber}}</td>
-                                <td>{{.emailadress}}</td>
-                                {{if eq .issuperadministrator "0"}}
-                                    <td>NO</td>
-                                {{else}}
-                                    <td>YES</td>
-                                {{end}}
-                                <td>{{.createtime}}</td>
-                                <td class="manage-user">
-                                    {{/*<a class="btn btn-link" href="/user/detail?name={{.username}}" role="button" onclick="detail({{.username}})">详情</a>*/}}
-                                    <button type="button" class="btn btn-link" data-toggle="modal" data-target="#myModal2" onclick="detail({{.username}})">详情</button>
-                                    <button type="button" class="btn btn-link" onclick="deleteBtn({{.username}})">删除</button>
-                                    {{/*<a class="btn btn-link" href="/user/delete?name={{.username}}" role="button" id="deleteBtn">删除</a>*/}}
-                                </td>
-                            </tr>
+                        {{range $index, $item := .datas}}
+                        <tr id="module_{{$item.Id}}" value="{{$item.Id}}">
+                            <td>{{$item.Openid}}</td>
+                            <td>{{$item.UserName}}</td>
+                            <td>{{$item.AlaisUserName}}</td>
+                            <td>{{$item.Department}}</td>
+                            <td>{{$item.PhoneNumber}}</td>
+                            <td>{{$item.EmailAdress}}</td>
+                            {{if eq $item.Issuperadministrator 0}}
+                                <td>NO</td>
+                            {{else}}
+                                <td>YES</td>
+                             {{end}}
+                            <td>{{$item.CreateTime}}</td>
+                            <td class="manage-user">
+                            <button type="button" class="btn btn-link" data-toggle="modal" data-target="#myModal2" onclick="detail({{$item.UserName}})">详情</button>
+                            <button type="button" class="btn btn-link" onclick="deleteBtn({{$item.UserName}})">删除</button>
+                            </td>
+                        </tr>
                         {{end}}
                     </tabody>
                 </table>
-                <button type="button" class="btn btn-success" data-toggle="modal" data-target="#myModal" id="addbtn">点击添加管理员</button>
+                <button type="button" class="btn btn-success glyphicon glyphicon-user" data-toggle="modal" data-target="#myModal" id="addbtn">添加管理员</button>
             </div>
 
+        </div>
+        <div class="zxf_pagediv">
+            <table style="margin-left: 700px;">
+                <tr>
+                    <td style="padding-left: 15px;"><a href="/user?name={{.name}}&head={{.head}}&page={{.paginator.firstpage}}" style="border: 1px solid;width: 30px;background: #5CADAD;text-decoration: none;" id="pageUp">上一页</a></td>
+                    {{range $index,$page := .paginator.pages}}
+                        <td style="padding-left: 15px;"><a href="/user?name={{$.paginator.name}}&head={{$.paginator.head}}&page={{$page}}" {{if eq $.paginator.currpage $page }} style="background-color: #005197;color: #fff;"{{end}}>{{$page}}</a></td>
+                    {{end}}
+                    <td style="padding-left: 15px;"><a href="/user?name={{.name}}&head={{.head}}&page={{.paginator.lastpage}}" style="border: 1px solid;width: 30px;background: #5CADAD;text-decoration: none;" id="pageDown">下一页</a></td>
+                    <td style="padding-left: 15px;" id="pagesChose">共{{.totals}}条记录共记{{.paginator.totalpages}}页 当前第{{.paginator.currpage}}页</td>
+                </tr>
+            </table>
         </div>
     </div>
     <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-keyboard="false">
@@ -157,6 +252,10 @@
                             <p style="color:#f80;">管理员姓名</p>
                             <input style="top: 0;left: 0;width:300px;height:35px;font:14px 华文楷体;color: #f80;" type="text" required="required" class="form-control" id="username" placeholder="请输入管理员姓名" name="username">
                         </div>
+                        <div class="select-user" style="margin-left: 20px;">
+                            <p style="color:#f80;">管理员用户名</p>
+                            <input style="top: 0;left: 0;width:300px;height:35px;font:14px 华文楷体;color: #f80;" type="text" required="required" class="form-control" id="username" placeholder="请输入管理员用户名(英文或者拼音)" name="alaisusername">
+                        </div>
                         <div class="select-user" id="userlevel" style="margin-left: 20px;">
                             <p style="color:#f80;">管理员类型</p>
                             <select name="userlevel" style="width: 300px;height: 35px;border-radius: 5px;position: relative;font: 14px 华文楷体;color: #f80;">
@@ -171,8 +270,12 @@
                             <input style="width: 60px;height: 15px;" type="radio" name="bedStatus" id="transfer" value="transfer" checked="checked">否
                         </div>
                         <div class="select-user" id="addusertype" style="margin-left: 20px;">
-                            <p style="margin-left:20px;color: #f80;">管理员组别</p>
-                            <input style="margin-left:20px;top: 0;left: 0;width:300px;height:35px;font:14px 华文楷体;color: #f80;" type="text" class="form-control" placeholder="请输入管理员类型" name="addusertype" style="margin-left: 20px;" required="required" id="usertypename">
+                            <p style="margin-left:20px;color: #f80;">管理员角色名称</p>
+                            <input style="margin-left:20px;top: 0;left: 0;width:300px;height:35px;font:14px 华文楷体;color: #f80;" type="text" class="form-control" placeholder="请输入管理员角色名称" name="addusertype" style="margin-left: 20px;" required="required" id="usertypename">
+                        </div>
+                        <div class="select-user" id="aliasaddusertype" style="margin-left: 20px;">
+                            <p style="margin-left:20px;color: #f80;">管理员角色别名</p>
+                            <input style="margin-left:20px;top: 0;left: 0;width:300px;height:35px;font:14px 华文楷体;color: #f80;" type="text" class="form-control" placeholder="请输入管理员角色别名(英文或者拼音)" name="alaisaddusertype" style="margin-left: 20px;" required="required" id="alaisusertypename">
                         </div>
                         <div class="select-user" id="usertype" style="margin-left: 20px;">
                             <select name="usertype" style="width: 300px;height: 35px;border-radius: 5px;position: relative;font: 14px 华文楷体;color: #f80;">

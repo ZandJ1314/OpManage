@@ -22,23 +22,16 @@ func (g *GameController) GameInfo() {
 	head := g.GetString("head")
 	g.Data["name"] = name
 	g.Data["head"] = head
-	sql := "select gamename,game_partment,create_time from op_gamename;"
-	o := orm.NewOrm()
-	var list []orm.ParamsList
-	res,err := o.Raw(sql).ValuesList(&list)
-	if err == nil && res > 0{
-		slice := make([]interface{},0);
-		for i := 0;i<len(list);i++{
-			plattest := make(map[string]interface{})
-			plattest["gamename"] = list[i][0]
-			plattest["gamepartment"] = list[i][1]
-			plattest["createtime"] = list[i][2]
-			slice = append(slice,plattest)
-		}
-		g.Data["result"] = slice
-	}else{
-		lib.NewLog().Error("user信息提取错误",err)
-	}
+	pa,_ := g.GetInt("page")
+	pre_page := 10
+	totals := models.GetGameRecordNum()
+	res := lib.Paginator(pa,pre_page,totals)
+	res["name"] = name
+	res["head"] = head
+	gamelist := models.SearchGameDataList(10,pa)
+	g.Data["datas"] = gamelist
+	g.Data["paginator"]=res //分页的数据
+	g.Data["totals"] = totals
 	sql2 := "select gametypename from op_gametype;"
 	o2 := orm.NewOrm()
 	var list2 []orm.ParamsList
@@ -65,19 +58,28 @@ func (g *GameController) Prepare(){
 
 func (g *GameController) AddGame() {
 	gamename := g.GetString("gamename")
+	alaisgame := g.GetString("alaisgamename")
+	gameurl := g.GetString("gameurl")
 	isaddtype := g.GetString("bedStatus")
 	var gametype string
 	if isaddtype == "allot"{
 		gametype = g.GetString("addgametype")
-		newType := new(models.GameType)
-		newType.Gametypename = gametype
-		if _,err := models.GameTypeAdd(newType);err != nil{
-			lib.NewLog().Error("failed",err)
+		if gametype == ""{
+			result := make(map[string]interface{})
+			result["message"] = "输入框不能为空！！"
+			g.Data["json"] = result
+			g.ServeJSON()
+		}else {
+			newType := new(models.GameType)
+			newType.Gametypename = gametype
+			if _,err := models.GameTypeAdd(newType);err != nil{
+				lib.NewLog().Error("failed",err)
+			}
 		}
 	}else{
 		gametype = g.GetString("gametype")
 	}
-	if gamename == "" || gametype == ""{
+	if gamename == "" || alaisgame == "" || gameurl == ""{
 		result := make(map[string]interface{})
 		result["message"] = "输入框不能为空！！"
 		g.Data["json"] = result
@@ -86,6 +88,8 @@ func (g *GameController) AddGame() {
 		//newGameType,_ := models.GameTypeGetByGameTypeName(gametype)
 		newGame := new(models.GameName)
 		newGame.Gamename = gamename
+		newGame.AlaisGamename = alaisgame
+		newGame.GameUrl = gameurl
 		newGame.GamePartment = gametype
 		//newGame.Gametype = newGameType
 		//newGame.User = User
@@ -107,10 +111,20 @@ func (g *GameController) GameDelete(){
 		lib.NewLog().Error("json.Unmarshal is err:",err.Error())
 	}
 	gamename := delgame.Name
-	num,err := models.GameDelete(gamename)
-	if num >0 && err == nil{
-		msg := gamename + "已经成功删除了！"
-		g.ajaxMsg(msg,Msg_OK)
+	GiveRole,err := models.GiveRoleGetByGamename(gamename)
+	if GiveRole == nil{
+		num,err := models.GameDelete(gamename)
+		if num >0 && err == nil{
+			msg := gamename + "已经成功删除了！"
+			g.ajaxMsg(msg,Msg_OK)
+		}
+	}else {
+		_,err1 := models.GiveRoleDeleteByGamename(gamename)
+		_,err2 := models.GameDelete(gamename)
+		if err1 == nil && err2 == nil{
+			msg := gamename + "已经成功删除了！"
+			g.ajaxMsg(msg,Msg_OK)
+		}
 	}
 }
 

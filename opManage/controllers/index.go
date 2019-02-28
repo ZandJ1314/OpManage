@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"github.com/astaxie/beego"
@@ -12,6 +13,7 @@ import (
 	"html/template"
 	"opManage/lib"
 	"opManage/models"
+	"strings"
 	"time"
 )
 
@@ -133,15 +135,22 @@ func (r *IndexController) Get() {
 
 func (r *IndexController) UserInfo()  {
 	username := r.GetString("username")
-	sql := "select game_name from op_giverole where user_name = ?"
+	sql := "select game_name,role from op_giverole where user_name = ?"
 	o := orm.NewOrm()
 	var list []orm.ParamsList
 	res,err := o.Raw(sql,username).ValuesList(&list)
 	slice := make([]interface{},0)
 	if err == nil && res > 0 {
 		var gametypename string
+		var gameurl string
 		for i := 0;i<len(list);i++{
+			roleinfo,_ := list[i][1].(string)
+			arrayrole := lib.SetRole(roleinfo)
+			str := strings.Replace(strings.Trim(fmt.Sprint(arrayrole), "[]"), " ", ",", -1)
+			//gameroleinfo := arrayrole.(string)
+			gameAllinfo := base64.URLEncoding.EncodeToString([]byte(str))
 			plattest := make(map[string]interface{})
+			plattest["gameallinfo"] = gameAllinfo
 			plattest["gamename"] = list[i][0]
 			gamename,_ := list[i][0].(string)
 			GameName,err := models.GameNameGetByGamename(gamename)
@@ -150,8 +159,11 @@ func (r *IndexController) UserInfo()  {
 				lib.NewLog().Error("failed",err)
 			}else{
 				gametypename = GameName.GamePartment
+				gameurl = GameName.GameUrl
 			}
 			plattest["gametype"] = gametypename
+			plattest["gameurl"] = gameurl
+			plattest["username"] = username
 			slice = append(slice,plattest)
 		}
 		r.Data["json"] = &slice

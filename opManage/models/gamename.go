@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	"github.com/astaxie/beego/orm"
 	_ "github.com/go-sql-driver/mysql"
 	"time"
@@ -9,6 +10,8 @@ import (
 type GameName struct {
 	Id int
 	Gamename string
+	AlaisGamename string
+	GameUrl string
 	GamePartment string
 	CreateTime time.Time `orm:"auto_now_add;type(datetime)"`
 	UpdateTime time.Time `orm:"auto_now;type(datetime);null"`
@@ -56,4 +59,27 @@ func GameDelete(name string) (int64,error){
 	query := orm.NewOrm().QueryTable(TableName("gamename"))
 	num,err := query.Filter("gamename",name).Delete()
 	return num,err
+}
+
+func SearchGameDataList(pagesize,pageno int) (users []GameName) {
+	o := orm.NewOrm()
+	qs := o.QueryTable(TableName("gamename"))
+	var us []GameName
+	cnt, err :=  qs.Limit(pagesize, (pageno-1)*pagesize).All(&us)
+	if err == nil {
+		fmt.Println("count", cnt)
+	}
+	return us
+}
+
+func GetGameRecordNum() int64 {
+	o := orm.NewOrm()
+	qs := o.QueryTable(TableName("gamename"))
+	var us []GameName
+	num, err :=  qs.All(&us)
+	if err == nil {
+		return num
+	}else{
+		return 0
+	}
 }

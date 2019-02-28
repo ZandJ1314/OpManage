@@ -8,6 +8,7 @@ import (
 type UserType struct {
 	Id int
 	Usertypename string
+	AlaisUsertypename string
 	CreateTime time.Time `orm:"auto_now_add;type(datetime)"`
 	UpdateTime time.Time `orm:"auto_now;type(datetime);null"`
 	//User *User `orm:"rel(fk)"`  //设置一对多的关系

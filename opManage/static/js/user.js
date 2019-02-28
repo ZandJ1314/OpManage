@@ -1,29 +1,3 @@
-$(function(){
-    $("#addbtn").click(function(){
-        var val=$('input:radio[name="bedStatus"]:checked').val();
-        console.log(val)
-        if (val == "transfer"){
-            document.getElementById("addusertype").style.display="none";
-            document.getElementById("usertype").style.display="inline";
-        }else{
-            document.getElementById("addusertype").style.display="inline";
-            document.getElementById("usertype").style.display="none";
-        }
-
-    })
-})
-$(function(){
-    $(":radio").click(function(){
-        if ($(this).val() == "transfer"){
-            document.getElementById("addusertype").style.display="none";
-            document.getElementById("usertype").style.display="inline";
-        }else{
-            document.getElementById("addusertype").style.display="inline";
-            document.getElementById("usertype").style.display="none";
-        }
-    });
-});
-
 $(function () {
     $("#useraddbtn").click(function () {
         $.ajax({
@@ -45,6 +19,7 @@ $(function () {
         })
     })
 })
+
 
 // var trlens = $('tr #detailsBtn').length //获取元素的长度个数
 // $(function () {

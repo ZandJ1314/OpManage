@@ -16,35 +16,26 @@ type DelUser struct {
 	Name string
 }
 
-func (u *UserController) Get(){
+func (u *UserController) AllUserInfo(){
 	name := u.GetString("name")
 	head := u.GetString("head")
 	u.Data["name"] = name
 	u.Data["head"] = head
-	sql := "select openid,user_name,department,phone_number,email_adress,head_portrait_name,issuperadministrator,create_time from op_user;"
-	o := orm.NewOrm()
-	var list []orm.ParamsList
-	res,err := o.Raw(sql).ValuesList(&list)
-	if err == nil && res > 0{
-		slice := make([]interface{},0);
-		for i := 0;i<len(list);i++{
-			plattest := make(map[string]interface{})
-			plattest["openid"] = list[i][0]
-			plattest["username"] = list[i][1]
-			plattest["department"] = list[i][2]
-			plattest["phonenumber"] = list[i][3]
-			plattest["emailadress"] = list[i][4]
-			plattest["headportraitname"] = list[i][5]
-			plattest["issuperadministrator"] = list[i][6]
-			plattest["createtime"] = list[i][7]
-			//plattest["index"] = "t"+ strconv.Itoa(i)
-			slice = append(slice,plattest)
-		}
-		u.Data["result"] = slice
-
-	}else{
-		lib.NewLog().Error("user信息提取错误",err)
-	}
+	//得到当前分页html的数据
+	pa,_ := u.GetInt("page")
+	pre_page := 10
+	//数据总数量
+	totals := models.GetRecordNum()
+	res := lib.Paginator(pa,pre_page,totals)
+	res["name"] = name
+	res["head"] = head
+	//得到分页的数据
+	//fmt.Println(res,pre_page,totals)
+	userlist := models.SearchDataList(10,pa)
+	//fmt.Println(userlist)
+	u.Data["datas"] = userlist
+	u.Data["paginator"]=res //分页的数据
+	u.Data["totals"] = totals
 	sql2 := "select usertypename from op_usertype;"
 	o2 := orm.NewOrm()
 	var list2 []orm.ParamsList
@@ -64,64 +55,21 @@ func (u *UserController) Get(){
 	u.TplName = "permission/user.html"
 }
 
-func (u *UserController) Post(){
-	name := u.GetString("name")
-	head := u.GetString("head")
-	u.Data["name"] = name
-	u.Data["head"] = head
-	sql := "select openid,user_name,department,phone_number,email_adress,head_portrait_name,issuperadministrator,create_time from op_user;"
-	o := orm.NewOrm()
-	var list []orm.ParamsList
-	res,err := o.Raw(sql).ValuesList(&list)
-	if err == nil && res > 0{
-		slice := make([]interface{},0);
-		for i := 0;i<len(list);i++{
-			plattest := make(map[string]interface{})
-			plattest["openid"] = list[i][0]
-			plattest["username"] = list[i][1]
-			plattest["department"] = list[i][2]
-			plattest["phonenumber"] = list[i][3]
-			plattest["emailadress"] = list[i][4]
-			plattest["headportraitname"] = list[i][5]
-			plattest["issuperadministrator"] = list[i][6]
-			plattest["createtime"] = list[i][7]
-			slice = append(slice,plattest)
-		}
-		u.Data["result"] = slice
-
-	}else{
-		lib.NewLog().Error("user信息提取错误",err)
-	}
-	sql2 := "select usertypename from op_usertype;"
-	o2 := orm.NewOrm()
-	var list2 []orm.ParamsList
-	res2,err2 := o2.Raw(sql2).ValuesList(&list2)
-	if err2 == nil && res2 > 0 {
-		slice2 := make([]interface{},0)
-		for i := 0;i<len(list2);i++{
-			plattest2 := make(map[string]interface{})
-			plattest2["usertypename"] = list2[i][0]
-			slice2 = append(slice2,plattest2)
-		}
-		u.Data["result2"] = slice2
-	}else{
-		lib.NewLog().Error("usertype信息提取错误",err2)
-	}
-	u.Data["xsrfdata"]=template.HTML(u.XSRFFormHTML())
-	u.TplName = "permission/user.html"
-}
 
 
 func (u *UserController) AddUser(){
 	username := u.GetString("username")
+	alaisusername := u.GetString("alaisusername")
 	userlevel := u.GetString("userlevel")
 	isaddtype := u.GetString("bedStatus")
 	var usertype string
 	var issuperadministrator int
 	if isaddtype == "allot"{
 		usertype = u.GetString("addusertype")
+		alaisusertype := u.GetString("alaisaddusertype")
 		newType := new(models.UserType)
 		newType.Usertypename = usertype
+		newType.AlaisUsertypename = alaisusertype
 		if _,err := models.UserTypeAdd(newType);err != nil{
 			lib.NewLog().Error("failed",err)
 		}
@@ -142,6 +90,7 @@ func (u *UserController) AddUser(){
 		//newUserType,_ := models.UserTypegetByuserTypename(usertype)
 		newUser := new(models.User)
 		newUser.UserName = username
+		newUser.AlaisUserName = alaisusername
 		newUser.Department = usertype
 		newUser.ManageName = userlevel
 		newUser.Issuperadministrator = issuperadministrator
@@ -169,10 +118,20 @@ func (u *UserController) UserDelete(){
 		lib.NewLog().Error("json.Unmarshal is err:",err.Error())
 	}
 	username := deluser.Name
-	num,err := models.UserDelete(username)
-	if num >0 && err == nil{
-		msg := username + "已经成功删除了！"
-		u.ajaxMsg(msg,Msg_OK)
+	GiveRole,_ := models.GiveRoleGetByUsername(username)
+	if GiveRole == nil{
+		num,err := models.UserDelete(username)
+		if num >0 && err == nil{
+			msg := username + "已经成功删除了！"
+			u.ajaxMsg(msg,Msg_OK)
+		}
+	}else{
+		_,err1 := models.GiveRoleDeleteByUsername(username)
+		_,err2 := models.UserDelete(username)
+		if err1 == nil && err2 == nil{
+			msg := username + "已经成功删除了！"
+			u.ajaxMsg(msg,Msg_OK)
+		}
 	}
 }
 

@@ -9,7 +9,7 @@ type GiveRole struct {
 	Id int
 	UserName string
 	GameName string
-	Role string
+	Role string `orm:"size(600)"`
 	CreateTime time.Time `orm:"auto_now_add;type(datetime)"`
 	UpdateTime time.Time `orm:"auto_now;type(datetime);null"`
 }
@@ -31,9 +31,32 @@ func GiveRoleGetByUsername(username string) (*GiveRole,error){
 	return g,nil
 }
 
+
+func GiveRoleGetByGamename(gamename string) (*GiveRole,error){
+	g := new(GiveRole)
+	err := orm.NewOrm().QueryTable(TableName("giverole")).Filter("game_name",gamename).One(g)
+	if err != nil{
+		return nil,err
+	}
+	return g,nil
+}
+
+
 func (g *GiveRole) GiveRoleUpdate(fields ...string) error {
 	if _, err := orm.NewOrm().Update(g, fields...); err != nil {
 		return err
 	}
 	return nil
+}
+
+func GiveRoleDeleteByUsername(name string) (int64,error){
+	query := orm.NewOrm().QueryTable(TableName("giverole"))
+	num,err := query.Filter("user_name",name).Delete()
+	return num,err
+}
+
+func GiveRoleDeleteByGamename(name string) (int64,error){
+	query := orm.NewOrm().QueryTable(TableName("giverole"))
+	num,err := query.Filter("game_name",name).Delete()
+	return num,err
 }

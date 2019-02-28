@@ -131,7 +131,7 @@
                             $('.game-type').append('<h4>' + r[j] + '</h4>')
                             for (var a=0;a<lens;a++){
                                 if (r[j] === result[a].gametype){
-                                    $('.game-type').append('<span class="game-name"><a href='+'"'+"/login?name="+result[a].gamename+'"'+'>'+result[a].gamename+'</a></span>')
+                                    $('.game-type').append('<a href='+'"'+result[a].gameurl+'?name='+result[a].username+'&jsessionid='+result[a].gameallinfo+'"'+'target="_blank"><span class="game-name">'+result[a].gamename+'</span></a>')
                                 }
                             }
                         }
@@ -155,7 +155,11 @@
                 <div class="col-lg-8 col-lg-offset-2">
                     <div class="page-header">
                             <span class="span-left">
-                                <img src="/static/img/headimg/{{.result.headPortraitName}}" class="img-circle">
+                                {{if eq .result.headPortraitName " "}}
+                                    <img src="/static/img/headimg/Desert.jpg" class="img-circle">
+                                {{else}}
+                                    <img src="/static/img/headimg/{{.result.headPortraitName}}" class="img-circle">
+                                {{end}}
                                 <a href="#" class="name-a">{{.result.name}}</a>
                                 <span class="manage-span">{{.result.managename}}</span>
                             </span>

@@ -8,8 +8,8 @@ import (
 
 type Role struct {
 	Id int
+	Role string
 	RoleName string
-	RoleDescription string
 	RoleLevel string
 	HigherRole string
 	Roleid int
@@ -31,7 +31,7 @@ func RoleAdd(r *Role) (int64,error) {
 
 func RoleGetByroleName(rolename string) (*Role, error) {
 	r := new(Role)
-	err := orm.NewOrm().QueryTable(TableName("role")).Filter("role_name",rolename).One(r)
+	err := orm.NewOrm().QueryTable(TableName("role")).Filter("role",rolename).One(r)
 	if err != nil {
 		return nil, err
 	}
@@ -40,7 +40,7 @@ func RoleGetByroleName(rolename string) (*Role, error) {
 
 func RoleGetByHigherRole(higherrole string) (*Role,error){
 	r := new(Role)
-	err := orm.NewOrm().QueryTable(TableName("role")).Filter("role_name",higherrole).One(r)
+	err := orm.NewOrm().QueryTable(TableName("role")).Filter("role",higherrole).One(r)
 	if err != nil{
 		return nil,err
 	}
@@ -56,7 +56,7 @@ func (r *Role) RoleUpdate(fields ...string) error {
 
 func (r *Role) RoleDeleteByRolename(rolename string) (int64,error){
 	query := orm.NewOrm().QueryTable(TableName("role"))
-	num,err := query.Filter("role_name",rolename).Delete()
+	num,err := query.Filter("role",rolename).Delete()
 	return num,err
 }
 
