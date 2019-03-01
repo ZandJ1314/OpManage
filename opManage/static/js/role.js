@@ -21,7 +21,6 @@ $(function () {
 			array[name] = value
 			var data = JSON.stringify(array)
 		}
-		// alert(data)
 		$.ajax({
 			url:"role/add",
 			type:"POST",

@@ -83,7 +83,7 @@
                         $('.game-type').append('<h4>' + r[j] + '</h4>')
                         for (var a=0;a<lens;a++){
                             if (r[j] === result[a].gametype){
-                                $('.game-type').append('<span class="game-name"><a href='+'"'+"/login?name="+result[a].gamename+'"'+'>'+result[a].gamename+'</a></span>')
+                                $('.game-type').append('<a href='+'"'+result[a].gameurl+'/ding?name='+result[a].username+'&jsessionid='+result[a].gameallinfo+'"'+'target="_blank"><span class="game-name">'+result[a].gamename+'</span></a>')
                             }
                         }
                     }

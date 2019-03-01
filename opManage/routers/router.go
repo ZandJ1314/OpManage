@@ -15,7 +15,7 @@ func init() {
     beego.Router("/user/detail",&controllers.UserController{},"POST:Detail")
     beego.Router("/user/judge",&controllers.UserController{},"GET:Judge")
     beego.Router("/user/judgeuser",&controllers.UserController{},"GET:JudgeUser")
-    beego.Router("/role",&controllers.RoleController{})
+    beego.Router("/role",&controllers.RoleController{},"*:AllRoleInfo")
     beego.Router("/role/ztree",&controllers.RoleController{},"POST:ZtreeInfo")
     beego.Router("/role/add",&controllers.RoleController{},"POST:AddRole")
     beego.Router("/role/update",&controllers.RoleController{},"POST:UpdateRole")
