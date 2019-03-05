@@ -24,7 +24,7 @@ func Init(){
 		dsn = dsn + "&loc=" + url.QueryEscape(dbtimezome)
 	}
 	orm.RegisterDataBase("default","mysql",dsn)
-	orm.RegisterModel(new(User),new(Role),new(GameType),new(GameName),new(GiveRole),new(UserType))
+	orm.RegisterModel(new(User),new(Role),new(GameType),new(GameName),new(GiveRole),new(UserType),new(Logs))
 	orm.RunSyncdb("default",false,true)
 	//orm.RegisterDataBase("db2","mysql",dsn2)
 	fmt.Println("连接数据库成功")

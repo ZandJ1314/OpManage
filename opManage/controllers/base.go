@@ -77,3 +77,8 @@ func (self *BaseController) display(tpl ...string){
 	}
 	self.TplName = tplname
 }
+
+
+
+
+

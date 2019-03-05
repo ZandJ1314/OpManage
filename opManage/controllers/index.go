@@ -35,7 +35,23 @@ func (r *IndexController) Get() {
 	access_token := lib.GetAccessToken()
 	persistent_code,openid1 := lib.GetPerpetualCode(code,access_token)
 	sns_token := lib.GetSnsToken(persistent_code,openid1,access_token)
-	name1,openid := lib.GetUserInfo(sns_token)
+	var name1,openid string
+	name1,openid = lib.GetUserInfo(sns_token)
+	logintime := time.Now()
+	clientIp := r.getClientIp()
+	newlogs := new(models.Logs)
+	newlogs.SourceIp = clientIp
+	newlogs.SourceName = name1
+	newlogs.AccessTime = logintime
+	if clientIp == "221.237.152.208"{
+		newlogs.IsLegalIp = true
+	}else{
+		newlogs.IsLegalIp = false
+	}
+	if _,err := models.LogsAdd(newlogs);err != nil{
+		lib.NewLog().Error("failed",err)
+	}
+	lib.StartTimer(logintime)
 	name := r.Ctx.GetCookie("username")
 	//sessionid := r.Ctx.GetCookie("sessionid")
 	redis,err := cache.NewCache("redis",`{"conn":"127.0.0.1:6379", "key":"cacheuserinfo"}`)

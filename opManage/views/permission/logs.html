@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
@@ -8,9 +8,9 @@
     <link rel="stylesheet" type="text/css" href="http://www.jq22.com/jquery/bootstrap-3.3.4.css">
     <script src="https://code.jquery.com/jquery-3.0.0.min.js"></script>
     <script src="http://www.jq22.com/jquery/bootstrap-3.3.4.js"></script>
-    <link rel="stylesheet" href="/static/css/permission/system.css" type="text/css">
+    <link rel="stylesheet" href="/static/css/permission/logs.css">
     <script>
-        $(function(){
+        $(document).ready(function(){
             var username = $("#name-a").text()
             $.ajax({
                 url:"index/info",
@@ -46,40 +46,89 @@
                 }
             })
         })
+        $(function () {
+            var text = $('#pagesChose').text()
+            arr = text.split(" ")
+            str1 = arr[0].split("")
+            str2 = arr[1].split("")
+            num1 = str1.slice(-2,-1)
+            num2 = str2.slice(-2,-1)
+            var num = Number(num2[0])
+            if (num == num1[0]){
+                $('#pageDown').attr("disabled",true);
+                $("#pageDown").css("pointer-events","none");
+            }
+            if (num == 1){
+                $('#pageUp').attr("disabled",true);
+                $("#pageUp").css("pointer-events","none");
+            }
+        })
+
     </script>
 </head>
 <body>
-    <div id="wrapper">
+<div id="wrapper">
     <div class="overlay">
         <div class="sticky">
             <header>
                 <div class="sticky-nav">
                     <span class="span-left">
-                        <a href="#" class="name-a">{{.name}}</a>
+                            <a href="#" class="name-a">{{.name}}</a>
                         <span class="manage-span">超级管理员</span>
                     </span>
                     <span class="span-right">欢迎使用阿拉蕾游戏服权限管理平台</span>
                 </div>
             </header>
-            <div class="showpermission" style="margin-top: 40px;margin-left: 100px;">
+            <div class="showtable">
+                <h4>日志列表</h4>
                 <blockquote class="elem-quote">
-                    关于本系统
+                    说明：每条日志信息会自动在一周之后清除
                 </blockquote>
-                <div style="margin-top: 40px;color: #ffc4c4;font-size: 18px;width: 600px;margin-left: 100px;">
-                        本系统是阿拉蕾科技公司的自主产品，主要对接的运维管理平台，采用和钉钉对接的方式，让公司员工将系统和自己紧密的贴合在一起，
-                    少去了登录需要登录名和密码的诸多烦恼，而且只允许公司内部员工进行登录，权限验证由超级管理员进行分配。本系统还在试运行阶段，
-                    希望大家提出宝贵意见。
-                </div>
-                <blockquote class="elem-quote" style="margin-top: 40px;">
-                    About the system
-                </blockquote>
-                <div style="margin-top: 40px;color: #ffc4c4;font-size: 18px;width: 600px;margin-left: 100px;">
-                    This system is Allah's science and technology of the company's own products, mainly docking operations management platform,
-                    USES and nailing docking way, make the company employees will systems and their tight fit together, went to login login name
-                    and password is required for a lot of trouble, and only allow the company's internal staff login, allocated by the super
-                    administrator for authentication. This system is still in the trial operation stage, we hope you can give us valuable advice.
-                </div>
             </div>
+            <div class="gametable">
+                <table class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <td>访问用户</td>
+                        <td>访问来源ip</td>
+                        <td>是否非法用户</td>
+                        <td>访问时间</td>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {{range $index, $item := .datas}}
+                        <tr id="module_{{$item.Id}}" value="{{$item.Id}}">
+                            {{if eq $item.SourceName "error"}}
+                                <td>正常用户</td>
+                            {{else}}
+                                <td>{{$item.SourceName}}</td>
+                            {{end}}
+                            <td>{{$item.SourceIp}}</td>
+                            {{if eq $item.IsLegalIp true}}
+                                <td>NO</td>
+                            {{else}}
+                                <td>YES</td>
+                            {{end}}
+                            <td>{{$item.AccessTime}}</td>
+                        </tr>
+                    {{end}}
+                    </tbody>
+                </table>
+            </div>
+
+
+        </div>
+        <div class="zxf_pagediv">
+            <table style="margin-left: 700px;">
+                <tr>
+                    <td style="padding-left: 15px;"><a href="/user?name={{.name}}&head={{.head}}&page={{.paginator.firstpage}}" style="border: 1px solid;width: 30px;background: #5CADAD;text-decoration: none;" id="pageUp">上一页</a></td>
+                    {{range $index,$page := .paginator.pages}}
+                        <td style="padding-left: 15px;"><a href="/user?name={{$.paginator.name}}&head={{$.paginator.head}}&page={{$page}}" {{if eq $.paginator.currpage $page }} style="background-color: #005197;color: #fff;"{{end}}>{{$page}}</a></td>
+                    {{end}}
+                    <td style="padding-left: 15px;"><a href="/user?name={{.name}}&head={{.head}}&page={{.paginator.lastpage}}" style="border: 1px solid;width: 30px;background: #5CADAD;text-decoration: none;" id="pageDown">下一页</a></td>
+                    <td style="padding-left: 15px;" id="pagesChose">共{{.totals}}条记录共记{{.paginator.totalpages}}页 当前第{{.paginator.currpage}}页</td>
+                </tr>
+            </table>
         </div>
     </div>
     <!-- Sidebar -->

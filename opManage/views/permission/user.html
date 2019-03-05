@@ -129,7 +129,6 @@
                 })
             })
         })
-
         $(function(){
             $("#addbtn").click(function(){
                 var val=$('input:radio[name="bedStatus"]:checked').val();
@@ -339,6 +338,9 @@
             </li>
             <li>
                 <a href="/game?name={{.name}}&head={{.head}}"><i class="fa fa-fw fa-cog"></i> 游戏管理</a>
+            </li>
+            <li>
+                <a href="/logs?name={{.name}}&head={{.head}}"><i class="fa fa-fw fa-cog"></i> 日志管理</a>
             </li>
             <li>
                 <a href="/system?name={{.name}}&head={{.head}}"><i class="fa fa-fw fa-bank"></i> 关于系统</a>

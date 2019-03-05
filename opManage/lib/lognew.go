@@ -7,8 +7,6 @@ import (
 	"os"
 	"time"
 )
-//var  FileLogs  *logs.BeeLogger
-//var  ConsoleLogs  *logs.BeeLogger
 
 func PathExists(path string) (bool) {
 	_, err := os.Stat(path)
@@ -73,10 +71,11 @@ func  NewLog()(FileLogs1  *logs.BeeLogger){
 	}
 	FileLogs.SetLogger(logs.AdapterFile,string(configStr))
 	FileLogs.EnableFuncCallDepth(true)
-	//FileLogs.Async(1111111111)
-	//FileLogs.Error("1111111111111111")
 	return FileLogs
 
 
 
 }
+
+
+

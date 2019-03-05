@@ -83,7 +83,7 @@ html {
     z-index: -1;
 }
 
-.sidebar-nav li:nth-child(2):before{
+.sidebar-nav li:nth-child(2):before {
     background-color: #402d5c;
 }
 .sidebar-nav li:nth-child(3):before {
@@ -95,10 +95,10 @@ html {
 .sidebar-nav li:nth-child(5):before {
     background-color: #64468f;
 }
-.sidebar-nav li:nth-child(6):before {
+.sidebar-nav li:nth-child(6) {
     background-color: #704fa0;
 }
-.sidebar-nav li:nth-child(7) {
+.sidebar-nav li:nth-child(7):before {
     background-color: #7c5aae;
 }
 .sidebar-nav li:hover:before {
@@ -204,7 +204,6 @@ body a:hover {
     width: 35px;
     height: 35px;
 }
-
 .manage-span{
     padding-left: 20px;
     font-size: 18px;
@@ -245,5 +244,80 @@ body a:hover {
     line-height: 64px;
     height: 64px;
     background-color: #1a1a1a;
+}
+
+.showtable{
+    padding-left: 20px;
+    padding-top: 20px;
+}
+
+.search{
+    display: inline-block;
+    margin-right: 40px;
+    width: 40%;
+    float: right;
+    border: 1px solid #D8D8D8;
+}
+
+.search form{
+    width: 100%;
+}
+
+form{
+    display: block;
+    margin-top:0em;
+}
+
+.search input[type="text"] {
+    margin: 0px 0;
+    padding: 8px 16px;
+    outline: none;
+    color: #5a5a5a;
+    background: none;
+    border: none;
+    width: 90%;
+    line-height: 1.5em;
+    font-size: 1em;
+    color: #BB5E00;
+    -webkit-appearance: none;
+    text-transform: capitalize;
+}
+.search input[type="submit"] {
+    padding: 0px;
+    background:#402d5c;
+    border: none;
+    cursor: pointer;
+    width: 61px;
+    outline: none;
+    height: 37px;
+    -webkit-appearance: none;
+    text-transform: capitalize;
+}
+.usertable{
+    padding-top: 80px;
+    padding-left: 50px;
+}
+td{
+    text-align: center;
+    vertical-align: middle;
+}
+
+.manage-user > a:link{
+    text-decoration: none;
+    color: #4F9D9D;
+}
+.manage-user > a:hover{
+    color: red;
+}
+
+div.zxf_pagediv{
+    position:fixed;
+    width: 100%;
+    height: auto;
+    bottom: 100px;
+    text-align: center;
+    color: #999999;
+    z-index:2;
+    overflow:hidden;
 }
 

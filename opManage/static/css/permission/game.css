@@ -98,6 +98,9 @@ html {
 .sidebar-nav li:nth-child(6):before {
     background-color: #704fa0;
 }
+.sidebar-nav li:nth-child(7):before {
+    background-color: #7c5aae;
+}
 .sidebar-nav li:hover:before {
     -webkit-transition: width 0.2s ease-in;
     transition: width 0.2s ease-in;

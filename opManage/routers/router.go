@@ -32,6 +32,7 @@ func init() {
     beego.Router("/game/detail",&controllers.GameController{},"POST:GameDetail")
     beego.Router("/game/judgegame",&controllers.GameController{},"GET:JudgeGame")
     beego.Router("/game/judgetype",&controllers.GameController{},"GET:JudgeType")
+    beego.Router("/logs",&controllers.LogsController{},"*:LogsInfo")
     beego.Router("/system",&controllers.SystemController{})
 }
 

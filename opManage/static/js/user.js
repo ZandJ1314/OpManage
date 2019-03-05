@@ -1,3 +1,9 @@
+// var trlens = $('tr #detailsBtn').length //获取元素的长度个数
+// $(function () {
+//     $('tr #deleteBtn').click(function () {
+//         confirm("您确定要删除吗？")
+//     })
+// })
 $(function () {
     $("#useraddbtn").click(function () {
         $.ajax({
@@ -19,15 +25,6 @@ $(function () {
         })
     })
 })
-
-
-// var trlens = $('tr #detailsBtn').length //获取元素的长度个数
-// $(function () {
-//     $('tr #deleteBtn').click(function () {
-//         confirm("您确定要删除吗？")
-//     })
-// })
-
 
 function detail(name) {
     var data = {"name":name}
