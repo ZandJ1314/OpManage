@@ -10,6 +10,33 @@
     <script src="https://code.jquery.com/jquery-3.0.0.min.js"></script>
     <script src="http://www.jq22.com/jquery/bootstrap-3.3.4.js"></script>
     <script src="/static/js/login/index.js"></script>
+    <script>
+        $(function () {
+            $("#indexBtn").click(function () {
+                var form = $('#addForm')[0];
+                var formData = new FormData(form)
+                $.ajax({
+                    url:"index/add",
+                    type:"POST",
+                    //将form表单序列化进行传值
+                    data:formData,
+                    async: false,
+                    cache:false,
+                    processData:false,
+                    contentType: false,
+                    success:function (result) {
+                        alert(result.msg)
+                        //$('.img-circle').attr('src','/static/img/headimg/'+result.filename)
+
+                    },
+                    error:function (xhr) {
+                        alert("警告：请求返回数据失败！！！")
+                        console.log(JSON.stringify(xhr))
+                    }
+                })
+            })
+        })
+    </script>
 
 </head>
 <body>
@@ -60,7 +87,7 @@
                             <span aria-hidden="true">×</span></button>
                             <h4 class="modal-title" id="myModalLabel" style="color:#5CADAD;">个人设置</h4>
                     </div>
-                    <form action="/" method="post" enctype="multipart/form-data">
+                    <form class="form-horizontal" role="form" method="post" enctype="multipart/form-data" id="addForm">
                         {{ .xsrfdata }}
                         <div class="modal-body" style="height: 200px;">
                             <div class="form-group" style="margin-top: 20px;">
@@ -89,7 +116,8 @@
                             </div>
                         </div>
                         <div class="modal-footer" style="height: 60px;">
-                            <button type="submit" class="btn btn-primary">保存</button>
+                            {{/*<a class="btn btn-default" href="/" style="color: #5CADAD;text-decoration: none;" role="button">保存</a>*/}}
+                            <button type="submit" class="btn btn-primary" id="indexBtn">保存</button>
                             <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
                         </div>
                     </form>
@@ -102,6 +130,21 @@
                 var name = $('.name-a').text();
                 var modal = $(this);
                 modal.find('#heighername').val(name);
+                $.ajax({
+                    url:"index/setup",
+                    type:"get",
+                    dataType: "json",
+                    data:{name:name},
+                    async:false,
+                    contentType:"application/json",
+                    success:function (result) {
+                        modal.find('#heigherrole').val(result.phone)
+                        modal.find('#rolelevel').val(result.email)
+                    },
+                    error:function (xhr) {
+                        alert("警告：请求返回数据失败！！！")
+                    }
+                });
             });
 
             $(document).ready(function(){
@@ -158,10 +201,11 @@
                 <div class="col-lg-8 col-lg-offset-2">
                     <div class="page-header">
                             <span class="span-left">
-                                {{if eq .result.headPortraitName " "}}
-                                    <img src="/static/img/headimg/Desert.jpg" class="img-circle">
-                                {{else}}
+                                {{if .result.headPortraitName }}
                                     <img src="/static/img/headimg/{{.result.headPortraitName}}" class="img-circle">
+
+                                {{else}}
+                                    <img src="/static/img/headimg/Desert.jpg" class="img-circle">
                                 {{end}}
                                 <a href="#" class="name-a">{{.result.name}}</a>
                                 <span class="manage-span">{{.result.managename}}</span>

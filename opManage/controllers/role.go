@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/astaxie/beego/orm"
 	"html/template"
-	"opManage/lib"
+	"opManage/libs"
 	"opManage/models"
 )
 
@@ -41,7 +41,7 @@ func (r *RoleController) AllRoleInfo(){
 		}
 		r.Data["result"] = slice
 	}else {
-		lib.NewLog().Error("role信息提取错误",err)
+		libs.NewLog().Error("role信息提取错误",err)
 	}
 	sql2 := "select gamename from op_gamename;"
 	o2 := orm.NewOrm()
@@ -56,7 +56,7 @@ func (r *RoleController) AllRoleInfo(){
 		}
 		r.Data["result2"] = slice2
 	}else {
-		lib.NewLog().Error("role信息提取错误",err2)
+		libs.NewLog().Error("role信息提取错误",err2)
 	}
 	r.Data["xsrfdata"]=template.HTML(r.XSRFFormHTML())
 	r.TplName = "permission/role.html"
@@ -89,7 +89,7 @@ func (r *RoleController) ZtreeInfo(){
 		r.ServeJSON()
 		return
 	}else{
-		lib.NewLog().Error("failed",err)
+		libs.NewLog().Error("failed",err)
 	}
 }
 
@@ -124,7 +124,7 @@ func (r *RoleController) AddRole(){
 	data := r.Ctx.Input.RequestBody
 	err := json.Unmarshal(data, &user)
 	if err != nil {
-		lib.NewLog().Error("json.Unmarshal is err:",err.Error())
+		libs.NewLog().Error("json.Unmarshal is err:",err.Error())
 		fmt.Println("json.Unmarshal is err:", err.Error())
 	}
 	newGiveRole := new(models.GiveRole)
@@ -142,7 +142,7 @@ func (r *RoleController) AddRole(){
 	}else{
 		newGiveRole.Role = roleinfo
 		if _,err := models.GiveRoleAdd(newGiveRole);err != nil{
-			lib.NewLog().Error("failed",err)
+			libs.NewLog().Error("failed",err)
 			r.ajaxMsg(err.Error(),Msg_Err)
 		}
 		r.ajaxMsg("权限分配成功",Msg_OK)
@@ -154,7 +154,7 @@ func (r *RoleController) UpdateRole() {
 	data := r.Ctx.Input.RequestBody
 	err := json.Unmarshal(data, &users)
 	if err != nil {
-		lib.NewLog().Error("json.Unmarshal is err:",err.Error())
+		libs.NewLog().Error("json.Unmarshal is err:",err.Error())
 		fmt.Println("json.Unmarshal is err:", err.Error())
 	}
 	name := users.UserName
@@ -170,7 +170,7 @@ func (r *RoleController) UpdateRole() {
 	}else{
 		GiveRole.Role = roleinfo
 		if err := GiveRole.GiveRoleUpdate();err != nil{
-			lib.NewLog().Error("failed",err)
+			libs.NewLog().Error("failed",err)
 			r.ajaxMsg(err.Error(),Msg_Err)
 		}else{
 			r.ajaxMsg("角色重新分配修改成功",Msg_OK)

@@ -19,7 +19,7 @@ func Init(){
 	if dbport == ""{
 		dbport = "3306"
 	}
-	dsn := dbuser + ":" + dbpassword + "@tcp(" + dbhost + ":" + dbport + ")/" + dbname + "?charset=utf8"
+	dsn := dbuser + ":" + dbpassword + "@tcp(" + dbhost + ":" + dbport + ")/" + dbname + "?charset=utf8&loc=Local"
 	if dbtimezome == ""{
 		dsn = dsn + "&loc=" + url.QueryEscape(dbtimezome)
 	}

@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"github.com/astaxie/beego/orm"
 	"html/template"
-	"opManage/lib"
+	"opManage/libs"
 	"opManage/models"
 )
 
@@ -26,7 +26,7 @@ func (u *UserController) AllUserInfo(){
 	pre_page := 10
 	//数据总数量
 	totals := models.GetRecordNum()
-	res := lib.Paginator(pa,pre_page,totals)
+	res := libs.Paginator(pa,pre_page,totals)
 	res["name"] = name
 	res["head"] = head
 	//得到分页的数据
@@ -49,7 +49,7 @@ func (u *UserController) AllUserInfo(){
 		}
 		u.Data["result2"] = slice2
 	}else{
-		lib.NewLog().Error("usertype信息提取错误",err2)
+		libs.NewLog().Error("usertype信息提取错误",err2)
 	}
 	u.Data["xsrfdata"]=template.HTML(u.XSRFFormHTML())
 	u.TplName = "permission/user.html"
@@ -71,7 +71,7 @@ func (u *UserController) AddUser(){
 		newType.Usertypename = usertype
 		newType.AlaisUsertypename = alaisusertype
 		if _,err := models.UserTypeAdd(newType);err != nil{
-			lib.NewLog().Error("failed",err)
+			libs.NewLog().Error("failed",err)
 		}
 	}else{
 		usertype = u.GetString("usertype")
@@ -96,7 +96,7 @@ func (u *UserController) AddUser(){
 		newUser.Issuperadministrator = issuperadministrator
 		//newUser.UserType = newUserType
 		if _,err := models.UserAdd(newUser);err != nil{
-			lib.NewLog().Error("failed",err)
+			libs.NewLog().Error("failed",err)
 			u.ajaxMsg(err.Error(),Msg_Err)
 		}
 		u.ajaxMsg("管理员添加成功",Msg_OK)
@@ -115,7 +115,7 @@ func (u *UserController) UserDelete(){
 	data := u.Ctx.Input.RequestBody
 	err := json.Unmarshal(data,&deluser)
 	if err != nil{
-		lib.NewLog().Error("json.Unmarshal is err:",err.Error())
+		libs.NewLog().Error("json.Unmarshal is err:",err.Error())
 	}
 	username := deluser.Name
 	GiveRole,_ := models.GiveRoleGetByUsername(username)
@@ -140,7 +140,7 @@ func (u *UserController) Detail()  {
 	data := u.Ctx.Input.RequestBody
 	err := json.Unmarshal(data,&detuser)
 	if err != nil{
-		lib.NewLog().Error("json.Unmarshal is err:",err.Error())
+		libs.NewLog().Error("json.Unmarshal is err:",err.Error())
 	}
 	username := detuser.Name
 	sql := "select game_name from op_giverole where user_name = ?"
@@ -159,7 +159,7 @@ func (u *UserController) Detail()  {
 		plattest := make(map[string]interface{})
 		plattest["gamename"] = "该管理员暂无游戏可以管理！"
 		u.Data["json"] = plattest
-		lib.NewLog().Error("gamename信息提取错误",err)
+		libs.NewLog().Error("gamename信息提取错误",err)
 	}
 	u.ServeJSON()
 }

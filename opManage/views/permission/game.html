@@ -184,11 +184,11 @@
         <div class="zxf_pagediv">
             <table style="margin-left: 700px;">
                 <tr>
-                    <td style="padding-left: 15px;"><a href="/user?name={{.name}}&head={{.head}}&page={{.paginator.firstpage}}" style="border: 1px solid;width: 30px;background: #5CADAD;text-decoration: none;" id="pageUp">上一页</a></td>
+                    <td style="padding-left: 15px;"><a href="/game?name={{.name}}&head={{.head}}&page={{.paginator.firstpage}}" style="border: 1px solid;width: 30px;background: #5CADAD;text-decoration: none;" id="pageUp">上一页</a></td>
                     {{range $index,$page := .paginator.pages}}
-                        <td style="padding-left: 15px;"><a href="/user?name={{$.paginator.name}}&head={{$.paginator.head}}&page={{$page}}" {{if eq $.paginator.currpage $page }} style="background-color: #005197;color: #fff;"{{end}}>{{$page}}</a></td>
+                        <td style="padding-left: 15px;"><a href="/game?name={{$.paginator.name}}&head={{$.paginator.head}}&page={{$page}}" {{if eq $.paginator.currpage $page }} style="background-color: #005197;color: #fff;"{{end}}>{{$page}}</a></td>
                     {{end}}
-                    <td style="padding-left: 15px;"><a href="/user?name={{.name}}&head={{.head}}&page={{.paginator.lastpage}}" style="border: 1px solid;width: 30px;background: #5CADAD;text-decoration: none;" id="pageDown">下一页</a></td>
+                    <td style="padding-left: 15px;"><a href="/game?name={{.name}}&head={{.head}}&page={{.paginator.lastpage}}" style="border: 1px solid;width: 30px;background: #5CADAD;text-decoration: none;" id="pageDown">下一页</a></td>
                     <td style="padding-left: 15px;" id="pagesChose">共{{.totals}}条记录共记{{.paginator.totalpages}}页 当前第{{.paginator.currpage}}页</td>
                 </tr>
             </table>

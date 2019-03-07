@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"opManage/lib"
+	"opManage/libs"
 	"opManage/models"
 )
 
@@ -17,7 +17,7 @@ func (self *LogsController) LogsInfo()  {
 	pa,_ := self.GetInt("page")
 	pre_page := 10
 	totals := models.GetLogRecordNum()
-	res := lib.Paginator(pa,pre_page,totals)
+	res := libs.Paginator(pa,pre_page,totals)
 	res["name"] = name
 	res["head"] = head
 	logslist := models.SearchLogDataList(10,pa)

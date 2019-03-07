@@ -4,7 +4,7 @@ import (
 	_ "fmt"
 	"github.com/astaxie/beego/orm"
 	"html/template"
-	"opManage/lib"
+	"opManage/libs"
 	"opManage/models"
 	"strconv"
 	"strings"
@@ -61,7 +61,7 @@ func (p *PermissionController) ZtreeInfo(){
 		p.ServeJSON()
 		return
 	}else{
-		lib.NewLog().Error("failed",err)
+		libs.NewLog().Error("failed",err)
 	}
 }
 
@@ -85,7 +85,7 @@ func (p *PermissionController) Add(){
 		newRole.RolePid = rolepid
 		//newRole.GameName = GameName
 		if _,err := models.RoleAdd(newRole);err != nil{
-			lib.NewLog().Error("failed",err)
+			libs.NewLog().Error("failed",err)
 			p.ajaxMsg(err.Error(),Msg_Err)
 		}
 		p.ajaxMsg("权限增加成功",Msg_OK)
@@ -100,7 +100,7 @@ func (p *PermissionController) Add(){
 		//rolelevel = uint64(rolelevel)
 		//rolelevel,_ := strconv.Atoi(rolelevel)
 		var newroleid uint64
-		lib.NewLog().Error("failed",err)
+		libs.NewLog().Error("failed",err)
 		higherroleid := Role.Roleid
 		rolepid := higherroleid
 		sql := "select roleid from op_role where role_pid = ?"
@@ -119,9 +119,9 @@ func (p *PermissionController) Add(){
 
 		}else{
 			level := newrolelevel-1
-			newroleid = lib.Exponet(10,level)//数据类型是unit64
+			newroleid = libs.Exponet(10,level) //数据类型是unit64
 			newroleid = newroleid * uint64(rolepid)
-			lib.NewLog().Error("failed",err)
+			libs.NewLog().Error("failed",err)
 		}
 		newRole := new(models.Role)
 		newRole.Role = role
@@ -132,7 +132,7 @@ func (p *PermissionController) Add(){
 		newRole.RolePid = rolepid
 		//newRole.GameName = GameName
 		if _,err := models.RoleAdd(newRole);err != nil{
-			lib.NewLog().Error("failed",err)
+			libs.NewLog().Error("failed",err)
 			p.ajaxMsg(err.Error(),Msg_Err)
 		}
 		p.ajaxMsg("权限增加成功",Msg_OK)
@@ -158,7 +158,7 @@ func (p *PermissionController) Update()  {
 			Role.Role = newrolename
 			Role.RoleName = basenewrolename
 			if err := Role.RoleUpdate();err != nil{
-				lib.NewLog().Error("failed",err)
+				libs.NewLog().Error("failed",err)
 				p.ajaxMsg(err.Error(),Msg_Err)
 			}else{
 				p.ajaxMsg("权限修改成功",Msg_OK)
@@ -189,9 +189,9 @@ func (p *PermissionController) Update()  {
 
 			}else{
 				level := newrolelevel-1
-				newroleid = lib.Exponet(10,level)//数据类型是unit64
+				newroleid = libs.Exponet(10,level) //数据类型是unit64
 				newroleid = newroleid * uint64(rolepid)
-				lib.NewLog().Error("failed",err)
+				libs.NewLog().Error("failed",err)
 			}
 			Role.Role = newrolename
 			Role.RoleName = basenewrolename
@@ -200,7 +200,7 @@ func (p *PermissionController) Update()  {
 			Role.Roleid = int(newroleid)
 			Role.RolePid = rolepid
 			if err := Role.RoleUpdate();err != nil{
-				lib.NewLog().Error("failed",err)
+				libs.NewLog().Error("failed",err)
 				p.ajaxMsg(err.Error(),Msg_Err)
 			}else{
 				p.ajaxMsg("权限修改成功",Msg_OK)
@@ -225,7 +225,7 @@ func (p *PermissionController) Delete()  {
 			newroleid,_ := roleid.(int)
 			num,err := Role.RoleDeleteByRoleid(newroleid)
 			if err != nil && num <= 0{
-				lib.NewLog().Error("failed",err)
+				libs.NewLog().Error("failed",err)
 				p.ajaxMsg(err.Error(),Msg_Err)
 			}else{
 				number ++
@@ -236,7 +236,7 @@ func (p *PermissionController) Delete()  {
 	}else{
 		num,err := Role.RoleDeleteByRolename(rolename)
 		if err != nil && num <= 0{
-			lib.NewLog().Error("failed",err)
+			libs.NewLog().Error("failed",err)
 			p.ajaxMsg(err.Error(),Msg_Err)
 		}else{
 			p.ajaxMsg("权限删除成功,共删除一条",Msg_OK)

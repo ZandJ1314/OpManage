@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/astaxie/beego/orm"
 	"html/template"
-	"opManage/lib"
+	"opManage/libs"
 	"opManage/models"
 )
 
@@ -25,7 +25,7 @@ func (g *GameController) GameInfo() {
 	pa,_ := g.GetInt("page")
 	pre_page := 10
 	totals := models.GetGameRecordNum()
-	res := lib.Paginator(pa,pre_page,totals)
+	res := libs.Paginator(pa,pre_page,totals)
 	res["name"] = name
 	res["head"] = head
 	gamelist := models.SearchGameDataList(10,pa)
@@ -45,7 +45,7 @@ func (g *GameController) GameInfo() {
 		}
 		g.Data["result2"] = slice2
 	}else{
-		lib.NewLog().Error("usertype信息提取错误",err2)
+		libs.NewLog().Error("usertype信息提取错误",err2)
 	}
 	g.Data["xsrfdata"]=template.HTML(g.XSRFFormHTML())
 	g.TplName = "permission/game.html"
@@ -73,7 +73,7 @@ func (g *GameController) AddGame() {
 			newType := new(models.GameType)
 			newType.Gametypename = gametype
 			if _,err := models.GameTypeAdd(newType);err != nil{
-				lib.NewLog().Error("failed",err)
+				libs.NewLog().Error("failed",err)
 			}
 		}
 	}else{
@@ -94,7 +94,7 @@ func (g *GameController) AddGame() {
 		//newGame.Gametype = newGameType
 		//newGame.User = User
 		if _,err := models.GameNameAdd(newGame);err != nil{
-			lib.NewLog().Error("failed",err)
+			libs.NewLog().Error("failed",err)
 			g.ajaxMsg(err.Error(),Msg_Err)
 		}
 		g.ajaxMsg("游戏增加成功",Msg_OK)
@@ -108,7 +108,7 @@ func (g *GameController) GameDelete(){
 	data := g.Ctx.Input.RequestBody
 	err := json.Unmarshal(data,&delgame)
 	if err != nil{
-		lib.NewLog().Error("json.Unmarshal is err:",err.Error())
+		libs.NewLog().Error("json.Unmarshal is err:",err.Error())
 	}
 	gamename := delgame.Name
 	GiveRole,err := models.GiveRoleGetByGamename(gamename)
@@ -133,7 +133,7 @@ func (g *GameController) GameDetail() {
 	data := g.Ctx.Input.RequestBody
 	err := json.Unmarshal(data,&detgame)
 	if err != nil{
-		lib.NewLog().Error("json.Unmarshal is err:",err.Error())
+		libs.NewLog().Error("json.Unmarshal is err:",err.Error())
 	}
 	gamename := detgame.Name
 	sql := "select user_name from op_giverole where game_name = ?;"
@@ -153,7 +153,7 @@ func (g *GameController) GameDetail() {
 		plattest := make(map[string]interface{})
 		plattest["username"] = "该游戏暂无管理员管理！"
 		g.Data["json"] = plattest
-		lib.NewLog().Error("gamename信息提取错误",err)
+		libs.NewLog().Error("gamename信息提取错误",err)
 	}
 	g.ServeJSON()
 }

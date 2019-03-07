@@ -38,7 +38,7 @@
     <div id="login_container"></div>
     <p style="text-align: center;padding: 0px;margin-top: 0px;color: #FF0000;">{{.result}}</p>
     <script>
-        var url = encodeURIComponent("http://yunwei.cqzq6.com");
+        var url = encodeURIComponent("http://yunwei.cqzq6.com:8888");
         var goto = encodeURIComponent("https://oapi.dingtalk.com/connect/oauth2/sns_authorize?appid=dingoaqx4dyl6pzb7cpssi&response_type=code&scope=snsapi_login&state=LOGIN&redirect_uri="+url)
         var obj = DDLogin({
             id:"login_container",//这里需要你在自己的页面定义一个HTML标签并设置id，例如<div id="login_container"></div>或<span id="login_container"></span>
@@ -49,7 +49,7 @@
         });
 
         var hanndleMessage = function (event) {
-            var data = "https://oapi.dingtalk.com/connect/oauth2/sns_authorize?appid=dingoaqx4dyl6pzb7cpssi&response_type=code&scope=snsapi_login&state=LOGIN&redirect_uri=http://yunwei.cqzq6.com&loginTmpCode="
+            var data = "https://oapi.dingtalk.com/connect/oauth2/sns_authorize?appid=dingoaqx4dyl6pzb7cpssi&response_type=code&scope=snsapi_login&state=LOGIN&redirect_uri=http://yunwei.cqzq6.com:8888&loginTmpCode="
             var origin = event.origin;
             console.log("origin", event.origin);
             if( origin == "https://login.dingtalk.com" ) { //判断是否来自ddLogin扫码事件。
