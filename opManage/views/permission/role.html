@@ -103,6 +103,34 @@
             SelectUser($('#usertype').val())
         })
 
+        function DeleteGame(name){
+            $.get(
+                "/gamequery",
+                {username:name},
+                function(data){
+                    var html = "";
+                    $.each(data,function(i,obj){
+                        if (obj.name === undefined){
+                            html+="<option value=''>";
+                            html+=""
+                            html+="</option>";
+                        }else{
+                            html+="<option value='"+obj.name+"'>";
+                            html+=obj.name;
+                            html+="</option>";
+                        }
+                    });
+                    $("#gamerole").html(html);
+                },'json');
+        }
+
+        $(function () {
+            $('#usernamedelete').change(function () {
+                DeleteGame(this.value)
+            });
+            DeleteGame($('#usernamedelete').val())
+        })
+
         $(function(){
             var username = $("#name-a").text()
             $.ajax({
@@ -183,6 +211,26 @@
                 })
             })
         })
+
+        $(function () {
+            $("#roledelete").click(function () {
+                $.ajax({
+                    url:"role/delete",
+                    type:"POST",
+                    dataType:"html",
+                    data:$("#deleteForm").serialize(),
+                    async:false,
+                    success:function (result) {
+                        var arre = $.parseJSON(result)
+                        alert(arre.message)
+                    },
+                    error:function (xhr) {
+                        alert("警告：请求返回数据失败！！！")
+                        console.log(JSON.stringify(xhr))
+                    }
+                })
+            })
+        })
     </script>
 
 </head>
@@ -236,15 +284,52 @@
                                 <div id="tree" class="pre-scrollable ztree" style="background-color: white;"></div>
                             </div>
                         </div>
-                        <div class="select-btn">
+                        <div class="select-btn" style="margin-left: 300px;width: 800px;">
                             <button type="submit" class="btn btn-success" id="addBtn">增加</button>
                             <button type="submit" class="btn btn-info" id="updateBtn">修改</button>
+                            <button class="btn btn-info" data-toggle="modal" data-target="#myModal">删除</button>
                         </div>
                     </form>
                 </div>
             </div>
-
         </div>
+        <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span></button>
+                        <h4 class="modal-title" id="myModalLabel" style="color:#5CADAD;">角色删除</h4>
+                    </div>
+                    <form class="form-horizontal" role="form" method="post" enctype="multipart/form-data" id="deleteForm">
+                        {{ .xsrfdata }}
+                        <div class="modal-body">
+                            <div class="select-user">
+                                <!-- <label for="rolename" class="col-sm-5 control-label">请选择需要更改的权限名称</label> -->
+                                <p style="color: #f80;">请选择需要管理员</p>
+                                <select id="usernamedelete" name="deletename">
+                                    {{range .result3}}
+                                        <option value={{.username}}>{{.username}}</option>
+                                    {{end}}
+                                </select>
+                            </div>
+                            <div class="select-user" id="gamerole">
+                                <p style="color: #f80;">请选择游戏角色</p>
+                                <select name="gamerole" id="gamerole">
+                                </select>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">关闭
+                            </button>
+                            <button type="submit" class="btn btn-primary" id="roledelete">
+                                确定删除
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal -->
         <!-- Sidebar -->
         <nav class="navbar navbar-inverse navbar-fixed-top" id="sidebar-wrapper" role="navigation">
             <ul class="nav sidebar-nav">

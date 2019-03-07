@@ -60,3 +60,9 @@ func GiveRoleDeleteByGamename(name string) (int64,error){
 	num,err := query.Filter("game_name",name).Delete()
 	return num,err
 }
+
+func GiveRoleDeleteByGameAndUser(gamename string,username string) (int64,error){
+	query := orm.NewOrm().QueryTable(TableName("giverole"))
+	num,err := query.Filter("user_name",username).Filter("game_name",gamename).Delete()
+	return num,err
+}

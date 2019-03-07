@@ -47,6 +47,7 @@ $(function () {
     })
 })
 
+
 $(function () {
     $('#gamenameselect').change(function () {
         var name = $('#gamenameselect').val()

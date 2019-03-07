@@ -184,6 +184,53 @@ func (g *GameController) JudgeType() {
 	g.ServeJSON()
 }
 
+func (g *GameController) GameSetupInfo(){
+	name := g.GetString("name")
+	GameName,_ := models.GameNameGetByGamename(name)
+	plattest := make(map[string]interface{})
+	alaisgamename := GameName.AlaisGamename
+	gameurl := GameName.GameUrl
+	gametype := GameName.GamePartment
+	plattest["alaisgamename"] = alaisgamename
+	plattest["gameurl"] = gameurl
+	plattest["gametype"] = gametype
+	g.Data["json"] = &plattest
+	g.ServeJSON()
+
+}
+
+func (g *GameController) GameUpdate() {
+	gamename := g.GetString("gamenamechange")
+	GameName,_ := models.GameNameGetByGamename(gamename)
+	alaisgame := g.GetString("alaisgamenamechange")
+	gameurl := g.GetString("gameurlchange")
+	gametype := g.GetString("changegametype")
+	_,err := models.GameTypeGetByGameTypeName(gametype)
+	if err != nil{
+		newType := new(models.GameType)
+		newType.Gametypename = gametype
+		if _,err := models.GameTypeAdd(newType);err != nil{
+			libs.NewLog().Error("failed",err)
+		}
+	}
+	if alaisgame == "" || gameurl == "" || gametype == ""{
+		result := make(map[string]interface{})
+		result["message"] = "输入框不能为空！！"
+		g.Data["json"] = result
+		g.ServeJSON()
+	}else{
+		GameName.AlaisGamename = alaisgame
+		GameName.GameUrl = gameurl
+		GameName.GamePartment = gametype
+		if err1 := GameName.GamenameUpdate();err1 != nil{
+			libs.NewLog().Error("failed",err)
+			g.ajaxMsg(err.Error(),Msg_Err)
+		}else{
+			g.ajaxMsg("游戏修改成功",Msg_OK)
+		}
+	}
+}
+
 
 
 

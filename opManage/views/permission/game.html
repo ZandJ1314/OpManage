@@ -70,6 +70,52 @@
 
         }
 
+        function gamechange(name){
+            $("#myModal3").on("show.bs.modal",function (event) {
+                var modal = $(this);
+                modal.find('#gamenamechange').val(name);
+                $.ajax({
+                    url:"game/info",
+                    type:"get",
+                    dataType:"json",
+                    data:{name:name},
+                    async:false,
+                    contentType: "application/json",
+                    success:function (result) {
+                        modal.find('#alaisgamenamechange').val(result.alaisgamename);
+                        modal.find('#gameUrlchange').val(result.gameurl);
+                        modal.find('#gametypechange').val(result.gametype);
+                    },
+                    error:function (xhr) {
+                        alert("警告：请求返回数据失败！！！")
+                    }
+                })
+            });
+        }
+
+        $(function () {
+            $("#gamechangebtn").click(function () {
+                $.ajax({
+                    url:"game/update",
+                    type:"POST",
+                    dataType: "html",
+                    //将form表单序列化进行传值
+                    data:$("#ChangeForm").serialize(),
+                    async: false,
+                    // contentType: "application/json",
+                    success:function (result) {
+                        var arre = $.parseJSON(result)
+                        alert(arre.message)
+
+                    },
+                    error:function (xhr) {
+                        alert("警告：请求返回数据失败！！！")
+                        console.log(JSON.stringify(xhr))
+                    }
+                })
+            })
+        })
+
         $(document).ready(function(){
             var username = $("#name-a").text()
             $.ajax({
@@ -171,6 +217,7 @@
                             <td>{{$item.CreateTime}}</td>
                             <td class="manage-user">
                                 <button type="button" class="btn btn-link" data-toggle="modal" data-target="#myModal2" onclick="gamedetail({{$item.Gamename}})">详情</button>
+                                <button type="button" class="btn btn-link" data-toggle="modal" data-target="#myModal3" onclick="gamechange({{$item.Gamename}})">修改</button>
                                 <button type="button" class="btn btn-link" onclick="gamedeleteBtn({{$item.Gamename}})">删除</button>
                             </td>
                         </tr>
@@ -267,6 +314,46 @@
                 </div>
             </div>
         </div>
+    </div>
+    <div class="modal fade" id="myModal3" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span></button>
+                    <h4 class="modal-title" id="myModalLabel" style="color:#5CADAD;">修改游戏</h4>
+                </div>
+                <form class="form-horizontal" role="form" method="post" enctype="multipart/form-data" id="ChangeForm">
+                    {{ .xsrfdata }}
+                    <div class="modal-body">
+                        <div class="select-game">
+                            <p>游戏名称</p>
+                            <input type="text" class="form-control" id="gamenamechange" placeholder="请输入游戏名称" name="gamenamechange" required="required">
+                        </div>
+                        <div class="select-game">
+                            <p>游戏别名</p>
+                            <input type="text" class="form-control" id="alaisgamenamechange" placeholder="请输入游戏别名(使用英文或拼音)" name="alaisgamenamechange" required="required">
+                        </div>
+                        <div class="select-game">
+                            <p>游戏URL</p>
+                            <input type="text" class="form-control" id="gameUrlchange" placeholder="请仔细输入游戏URL,否则不能跳转成功" name="gameurlchange" required="required">
+                        </div>
+                        <div class="select-game" id="addgametype">
+                            <p style="margin-left: 20px;">游戏类型</p>
+                            <input type="text" class="form-control" placeholder="请输入游戏类型" name="changegametype" style="margin-left: 20px;" id="gametypechange">
+                        </div>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">关闭
+                        </button>
+                        <button type="submit" class="btn btn-primary" id="gamechangebtn">
+                            确认修改
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div><!-- /.modal-content -->
     </div>
     <!-- Sidebar -->
     <nav class="navbar navbar-inverse navbar-fixed-top" id="sidebar-wrapper" role="navigation">

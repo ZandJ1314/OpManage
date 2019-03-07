@@ -41,7 +41,7 @@ func (r *RoleController) AllRoleInfo(){
 		}
 		r.Data["result"] = slice
 	}else {
-		libs.NewLog().Error("role信息提取错误",err)
+		libs.NewLog().Error("usertype信息提取错误",err)
 	}
 	sql2 := "select gamename from op_gamename;"
 	o2 := orm.NewOrm()
@@ -56,7 +56,22 @@ func (r *RoleController) AllRoleInfo(){
 		}
 		r.Data["result2"] = slice2
 	}else {
-		libs.NewLog().Error("role信息提取错误",err2)
+		libs.NewLog().Error("game信息提取错误",err2)
+	}
+	sql3 := "select user_name from op_user;"
+	o3 := orm.NewOrm()
+	var list3 []orm.ParamsList
+	res3,err3 := o3.Raw(sql3).ValuesList(&list3)
+	if err3 == nil && res3 > 0 {
+		slice3 := make([]interface{},0)
+		for i := 0;i<len(list3);i++{
+			plattest3 := make(map[string]interface{})
+			plattest3["username"] = list3[i][0]
+			slice3 = append(slice3,plattest3)
+		}
+		r.Data["result3"] = slice3
+	}else{
+		libs.NewLog().Error("user信息提取错误",err2)
 	}
 	r.Data["xsrfdata"]=template.HTML(r.XSRFFormHTML())
 	r.TplName = "permission/role.html"
@@ -118,6 +133,32 @@ func (r *RoleController) UserQuery() {
 	}
 
 }
+func (r *RoleController) GameQuery() {
+	r.TplName = "permission/role.html"
+	name := r.GetString("username")
+	sql := "select game_name from op_giverole where user_name = ?;"
+	o := orm.NewOrm()
+	var list []orm.ParamsList
+	res,err := o.Raw(sql,name).ValuesList(&list)
+	slice := make([]interface{},0)
+	//var request string
+	if err == nil && res > 0{
+		for i := 0;i<len(list);i++{
+			plattest := make(map[string]interface{})
+			plattest["name"] = list[i][0]
+			slice = append(slice,plattest)
+		}
+		r.Data["json"] = &slice
+		r.ServeJSON()
+	}else{
+		plattest := make(map[string]interface{})
+		plattest["name"] = ""
+		r.Data["json"] = &plattest
+		r.ServeJSON()
+	}
+
+}
+
 
 func (r *RoleController) AddRole(){
 	var user User
@@ -127,25 +168,39 @@ func (r *RoleController) AddRole(){
 		libs.NewLog().Error("json.Unmarshal is err:",err.Error())
 		fmt.Println("json.Unmarshal is err:", err.Error())
 	}
-	newGiveRole := new(models.GiveRole)
-	newGiveRole.UserName = user.UserName
-	newGiveRole.GameName = user.GameName
-	//a := reflect.TypeOf(user.RoleInfo).String()
-	//fmt.Println(a)  //map[string]interface{}类型
-	str,err := json.Marshal(user.RoleInfo)
-	roleinfo := string(str)
-	if roleinfo == "{}"{
+	gamename := user.GameName
+	username := user.UserName
+	sql := "select role from op_giverole where user_name = ? and game_name = ?"
+	selectIds := []string{username,gamename}
+	o := orm.NewOrm()
+	var maps []orm.Params
+	res,err1 := o.Raw(sql,selectIds).Values(&maps)
+	if err1 == nil && res > 0{
 		result := make(map[string]interface{})
-		result["message"] = "您没有选择绑定任何权限，请您选择之后再提交!!"
+		result["message"] = "您已经给"+username+"分配过"+gamename+"的权限了，请选择其他游戏"
 		r.Data["json"] = result
 		r.ServeJSON()
-	}else{
-		newGiveRole.Role = roleinfo
-		if _,err := models.GiveRoleAdd(newGiveRole);err != nil{
-			libs.NewLog().Error("failed",err)
-			r.ajaxMsg(err.Error(),Msg_Err)
+	}else {
+		newGiveRole := new(models.GiveRole)
+		newGiveRole.UserName = username
+		newGiveRole.GameName = gamename
+		//a := reflect.TypeOf(user.RoleInfo).String()
+		//fmt.Println(a)  //map[string]interface{}类型
+		str,_ := json.Marshal(user.RoleInfo)
+		roleinfo := string(str)
+		if roleinfo == "{}"{
+			result := make(map[string]interface{})
+			result["message"] = "您没有选择绑定任何权限，请您选择之后再提交!!"
+			r.Data["json"] = result
+			r.ServeJSON()
+		}else{
+			newGiveRole.Role = roleinfo
+			if _,err := models.GiveRoleAdd(newGiveRole);err != nil{
+				libs.NewLog().Error("failed",err)
+				r.ajaxMsg(err.Error(),Msg_Err)
+			}
+			r.ajaxMsg("权限分配成功",Msg_OK)
 		}
-		r.ajaxMsg("权限分配成功",Msg_OK)
 	}
 }
 
@@ -175,5 +230,18 @@ func (r *RoleController) UpdateRole() {
 		}else{
 			r.ajaxMsg("角色重新分配修改成功",Msg_OK)
 		}
+	}
+}
+
+func (r *RoleController) DeleteRole() {
+	username := r.GetString("deletename")
+	gamename := r.GetString("gamerole")
+	fmt.Println(username,gamename)
+	num,err := models.GiveRoleDeleteByGameAndUser(username,gamename)
+	fmt.Println(num,err)
+	if err == nil && num > 0{
+		r.ajaxMsg("角色删除成功",Msg_OK)
+	}else{
+		r.ajaxMsg("角色删除失败",Msg_Err)
 	}
 }

@@ -421,8 +421,8 @@ select select{
 }
 
 .select-btn{
-  width: 600px;
-  margin-left: 400px;
+  width: 800px;
+  margin-left: 300px;
 }
 
 button{
@@ -438,5 +438,17 @@ button{
   font-family: Microsoft YaHei;
   color:white;
   font-size:17px;
+}
+.select-user{
+  margin-left: 20px;
+}
+
+.select-user input,textarea{
+  top: 0;
+  left: 0;
+  width: 300px;
+  height: 35px;
+  font: 19px 华文楷体;
+  color: #f80;
 }
 
